@@ -6,6 +6,7 @@ import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUp
 const accountSchema = new Schema<IAccount>({
     email: { type: String, required: false },
     mobile: { type: String, required: false },
+    password: { type: String, required: true },
   }, {
     timestamps: { 
         updatedAt: 'updated_at', 

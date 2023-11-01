@@ -30,7 +30,8 @@ export interface IRepositoryCreateResponse<T> {
 }
 
 export interface IRepositoryUpdateByIdResponse<T> {
-    element: Partial<T>;
+    element?: Partial<T>;
+    success: boolean;
 }
 
 export interface IRepositoryUpdateManyResponse {
