@@ -10,7 +10,7 @@ export default class INodeMailer implements IEmail {
             const enumKey = Object.keys(templates).find(
                 (key) => templates[key] === enumValue
             );
-            return enumKey || 'Information'; // Return 'Unknown' if not found.
+            return enumKey || 'information'; // Return 'Unknown' if not found.
         }
 
         await sendEmail(

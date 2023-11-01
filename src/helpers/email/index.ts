@@ -8,9 +8,9 @@ export default interface IEmail {
 }
 
 export enum templates {
-    Information = "Information",
-    ConfirmationCode = "ConfirmationCode",
-    ConfirmationLink = "ConfirmationLink"
+    Information = "information",
+    ConfirmationCode = "confirmation-code",
+    ConfirmationLink = "confirmation-link"
 }
 
 export interface IInformationContext {
