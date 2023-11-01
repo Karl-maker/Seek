@@ -14,6 +14,7 @@ export default class MongoDB implements IDatabase {
 
   async connect(): Promise<void> {
     this.connection = mongoose.connection;
+    this.mongoose = mongoose;
     await mongoose.connect(this.uri, this.options);
   }
 
