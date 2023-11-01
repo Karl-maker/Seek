@@ -8,4 +8,5 @@ export interface IAccount extends IBase {
     email?: string;
     mobile?: string;
     password: string;
+    role: 'user' | 'admin'
 }

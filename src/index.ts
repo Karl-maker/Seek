@@ -9,13 +9,13 @@ import IDatabase from "./helpers/database";
 import { IBucketStorage } from "./helpers/bucket";
 import { FileSystemBucket } from "./helpers/bucket/file-system";
 
-const mongo_db_uri = config.database.live.uri;
+const mongo_db_uri = config.database[config.environment].uri;
 const server: NodeServer = new NodeServer(express());
 const event: IMessengerQueue = NodeEvent;
 const database: IDatabase = new MongoDB(mongo_db_uri, {
-    dbName: config.database.live.name,
-    user: config.database.live.user,
-    pass: config.database.live.password, 
+    dbName: config.database[config.environment].name,
+    user: config.database[config.environment].user,
+    pass: config.database[config.environment].password, 
     retryWrites: true, 
     w: "majority" 
 });
