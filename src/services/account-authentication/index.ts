@@ -1,4 +1,4 @@
-import { IAccountRepository } from "../account-repository";
+import { IAccountRepository } from "../../modules/account-repository";
 
 export default interface IAccountAuthentication {
     accountRepository: IAccountRepository;

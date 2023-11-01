@@ -1,5 +1,5 @@
 import IAccountAuthentication, { ICredentials, ILoginResponse, ILogoutResponse } from "..";
-import { IAccountRepository } from "../../account-repository";
+import { IAccountRepository } from "../../../modules/account-repository";
 
 export default class LocalAccountAuthentication implements IAccountAuthentication {
     accountRepository: IAccountRepository;
