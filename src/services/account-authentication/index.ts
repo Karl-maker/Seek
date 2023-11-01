@@ -8,6 +8,7 @@ export default interface IAccountAuthentication {
 
 export interface ILoginResponse {
     access_token: string;
+    refresh_token?: string;
 }
 
 export interface ILogoutResponse {

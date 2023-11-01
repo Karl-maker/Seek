@@ -3,13 +3,14 @@ export default interface IBaseRepository<T> {
     updateById(id: string | number, data: Partial<T>): Promise<IRepositoryUpdateByIdResponse<T>>;
     updateMany(where: Partial<T>, data: Partial<T>): Promise<IRepositoryUpdateManyResponse>;
     findById(id: string | number): Promise<Partial<T>>;
-    findMany(where: Partial<T>, options?: IFindManyOptions): Promise<IFindManyResponse<T>>;
+    findMany(where: Partial<T>, options?: IFindManyOptions<T>): Promise<IFindManyResponse<T>>;
     findOne(where: Partial<T>): Promise<Partial<T>>;
     deleteById(id: string | number): Promise<IDeleteById<T>>;
     deleteMany(where: Partial<T>): Promise<IDeleteMany>;
 }
 
 export interface IBase {
+    _id: string;
     id: string | number;
     version: number;
     created_at: Date;
@@ -45,11 +46,18 @@ export interface IFindManyResponse<T> {
     amount: number;
 }
 
-export enum SortEnum {
-    asc = 'asc',
-    dsc = 'dsc'
+export enum SortDirection {
+    ASC = 'asc',
+    DESC = 'desc',
 }
-
-export interface IFindManyOptions {
-    sort?: SortEnum
+  
+export interface IFindManyOptions<T> {
+    sort?: {
+      field: keyof T; 
+      direction: SortDirection;
+    };
+    page?: {
+      size: number;
+      number: number;
+    };
 }
