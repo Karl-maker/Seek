@@ -1,11 +1,18 @@
 import mongoose, { Connection, Mongoose } from 'mongoose';
 import IDatabase from '..';
 
-export default class MongoDB implements IDatabase {
-  private connection: Connection | null = null;
-  private uri: string;
-  private options: mongoose.ConnectOptions;
-  public mongoose: Mongoose;
+export interface IMongoDB extends IDatabase {
+  connection: Connection | null;
+  uri: string;
+  options: mongoose.ConnectOptions;
+  mongoose: Mongoose;
+}
+
+export default class MongoDB implements IMongoDB {
+  connection: Connection | null = null;
+  uri: string;
+  options: mongoose.ConnectOptions;
+  mongoose: Mongoose;
 
   constructor(uri: string, options?: mongoose.ConnectOptions){
     this.uri = uri;

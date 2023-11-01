@@ -1,5 +1,5 @@
 import { IAccount, IAccountRepository } from "..";
-import MongoDB from "../../../helpers/database/mongo";
+import { IMongoDB } from "../../../helpers/database/mongo";
 import { Model, Schema } from 'mongoose';
 import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany } from "../../base-repository";
 
@@ -14,10 +14,10 @@ const accountSchema = new Schema<IAccount>({
 });
 
 export class MongoAccountRepository implements IAccountRepository {
-    private database: MongoDB;
+    private database: IMongoDB;
     private model: Model<IAccount>;
 
-    constructor(db: MongoDB) {
+    constructor(db: IMongoDB) {
         this.database = db;     
         this.model = this.database.mongoose.model<IAccount>('Account', accountSchema);
     }
