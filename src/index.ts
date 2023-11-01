@@ -1,6 +1,7 @@
 import { logger } from "./helpers/logger/basic-logging";
 import express from "express";
 import NodeServer from "./helpers/server";
+import { engine } from 'express-handlebars';
 import { config } from "./config";
 import NodeEvent from "./helpers/event/node";
 import IMessengerQueue from "./helpers/event";
@@ -25,6 +26,9 @@ const bucket: IBucketStorage = new FileSystemBucket('../storage');
     await database.connect();
     // Add controllers, events and middlewares here..
 
+    server.app.set('view engine', 'handlebars');
+    server.app.engine('.handlebars', engine({extname: 'handlebars'}));
+    
 
     server.start(config.port, () => {
         logger.info(`running on port ${config.port}`);
