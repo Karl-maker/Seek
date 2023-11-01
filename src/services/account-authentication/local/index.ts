@@ -1,6 +1,5 @@
 import IAccountAuthentication, { IAuthorizePayload, ICredentials, ILoginResponse, ILogoutResponse, IRefreshPayload } from "..";
 import { ITokenManager } from "../../../helpers/token";
-import JWTService from "../../../helpers/token/jwt";
 import { IAccountRepository } from "../../../modules/account-repository";
 import HTTPError from "../../../utils/error";
 import PasswordUtils from "../../../utils/password";
