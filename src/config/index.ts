@@ -37,6 +37,15 @@ export const config = {
     account_sid: env.TWILIO_ACCOUNT_SID,
     auth_token: env.TWILIO_AUTH_TOKEN,
     number: env.TWILIO_NUMBER
+  },
+  nodemailer: {
+    service: env.NODEMAILER_SERVICE,
+    host: env.NODEMAILER_HOST,
+    port: env.NODEMAILER_PORT || 587,
+    auth: {
+      user: env.NODEMAILER_USER,
+      password: env.NODEMAILER_PASS
+    }
   }
   // Add other environment variables here...
 };
