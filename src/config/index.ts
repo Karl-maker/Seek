@@ -32,6 +32,11 @@ export const config = {
       password: env.MONGO_DB_TEST_PASS,
       user: env.MONGO_DB_TEST_USER
     }
+  },
+  twilio: {
+    account_sid: env.TWILIO_ACCOUNT_SID,
+    auth_token: env.TWILIO_AUTH_TOKEN,
+    number: env.TWILIO_NUMBER
   }
   // Add other environment variables here...
 };
