@@ -28,11 +28,11 @@ module.exports = async (
 
     transporter.use('compile', handlebars({
       viewEngine: {
-        layoutsDir: path.resolve(__dirname, '../../../../../templates'),
-        partialsDir: path.resolve(__dirname, '../../../../../templates/partials'),
-        defaultLayout: 'Information',
+        layoutsDir: path.resolve(__dirname, '../../../../../templates/email'),
+        partialsDir: path.resolve(__dirname, '../../../../../templates/email/partials'),
+        defaultLayout: 'information',
       },
-      viewPath: path.resolve(__dirname, '../../../../../templates'),
+      viewPath: path.resolve(__dirname, '../../../../../templates/email'),
     }));
 
     const mailOptions = {
