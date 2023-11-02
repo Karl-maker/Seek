@@ -163,4 +163,44 @@ export default class AccountController {
             }
         }
     }
+
+    deleteAccountById(accountRepository: IAccountRepository){
+        return async (req: Request, res: Response, next: NextFunction) => {
+            try{
+                const result = await accountRepository.deleteById(req.params.account_id);
+
+                if(!result.success) {
+                    throw new HTTPError(`Issue Deleting`, 500);
+                }
+
+                res.json({
+                    message: `Delete Successful`
+                });
+
+            } catch(err) {
+                next(err);
+            }
+        }
+    }
+
+    deactivateAccountById(accountRepository: IAccountRepository){
+        return async (req: Request, res: Response, next: NextFunction) => {
+            try{
+                const result = await accountRepository.updateById(req.user.id, {
+                    status: 'deactivated'
+                });
+
+                if(!result.success) {
+                    throw new HTTPError(`Issue Deactivating`, 500);
+                }
+
+                res.json({
+                    message: `Deactivated Successful`
+                });
+
+            } catch(err) {
+                next(err);
+            }
+        }
+    }
 }
