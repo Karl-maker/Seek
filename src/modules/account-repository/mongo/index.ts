@@ -36,7 +36,8 @@ const accountSchema = new Schema<IAccount>({
         },
     },
     password: { type: String, required: true },
-    role: { type: String, default: 'user' }
+    role: { type: String, default: 'user' },
+    status: { type: String, default: 'active' }
   }, {
     timestamps: { 
         updatedAt: 'updated_at', 
@@ -136,7 +137,9 @@ export class MongoAccountRepository implements IAccountRepository {
      * @TODO Test Method
      */
     async deleteById(id: string | number): Promise<IDeleteById<IAccount>> {
-        const deletedAccount = await this.model.findByIdAndDelete(id).lean();
+        const deletedAccount = await this.model.findByIdAndUpdate(id, {
+            status: 'deleted'
+        }).lean();
         if (!deletedAccount) {
           return { success: false };
         }
@@ -147,7 +150,9 @@ export class MongoAccountRepository implements IAccountRepository {
      * @TODO Test Method
      */
     async deleteMany(where: Partial<IAccount>): Promise<IDeleteMany> {
-        const result = await this.model.deleteMany(where);
-        return { amount: result.deletedCount || 0 };
+        const result = await this.model.updateMany(where, {
+            status: 'deleted'
+        });
+        return { amount: result.modifiedCount || 0 };
     }
 }

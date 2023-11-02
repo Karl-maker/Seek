@@ -42,7 +42,8 @@ export default class LocalAccountAuthentication implements IAccountAuthenticatio
 
         return {
             access_token,
-            refresh_token
+            refresh_token,
+            account
         }
     }
 

@@ -46,6 +46,18 @@ export const config = {
       user: env.NODEMAILER_USER,
       password: env.NODEMAILER_PASS
     }
+  },
+  token: {
+    access: {
+      public: 'secret',
+      private: 'secret',
+      issuer: ""
+    },
+    refresh: {
+      public: 'secret',
+      private: 'secret',
+      issuer: ""
+    }
   }
   // Add other environment variables here...
 };

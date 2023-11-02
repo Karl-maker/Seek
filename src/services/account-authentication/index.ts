@@ -20,6 +20,7 @@ export interface IRefreshPayload {
 export interface ILoginResponse {
     access_token: string;
     refresh_token?: string;
+    account: Partial<IAccount>;
 }
 
 export interface ILogoutResponse {
