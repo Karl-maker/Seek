@@ -1,10 +1,11 @@
-import { IAccountRepository } from "../../modules/account-repository";
+import { IAccount, IAccountRepository } from "../../modules/account-repository";
 
 export default interface IAccountAuthentication {
     accountRepository: IAccountRepository;
     login(credentials: ICredentials): Promise<ILoginResponse>;
     authorize(access_token: string): Promise<IAuthorizePayload>;
     logout(account_id: string): Promise<ILogoutResponse>;
+    signup(data: IAccount): Promise<ISignupResponse>;
 }
 
 export interface IAuthorizePayload {
@@ -29,4 +30,9 @@ export interface ICredentials {
     password: string;
     email?: string;
     mobile?: string;
+}
+
+export interface ISignupResponse {
+    success: boolean;
+    account: Partial<IAccount>
 }

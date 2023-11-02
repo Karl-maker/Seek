@@ -1,6 +1,6 @@
-import IAccountAuthentication, { IAuthorizePayload, ICredentials, ILoginResponse, ILogoutResponse, IRefreshPayload } from "..";
+import IAccountAuthentication, { IAuthorizePayload, ICredentials, ILoginResponse, ILogoutResponse, IRefreshPayload, ISignupResponse } from "..";
 import { ITokenManager } from "../../../helpers/token";
-import { IAccountRepository } from "../../../modules/account-repository";
+import { IAccount, IAccountRepository } from "../../../modules/account-repository";
 import HTTPError from "../../../utils/error";
 import PasswordUtils from "../../../utils/password";
 
@@ -80,6 +80,21 @@ export default class LocalAccountAuthentication implements IAccountAuthenticatio
     async logout(account_id: string): Promise<ILogoutResponse> {
         return {
             success: true
+        }
+    }
+
+    async signup(data: IAccount): Promise<ISignupResponse>{
+        try{
+            const new_account = await this.accountRepository.create(data);
+            if(!new_account.element) throw new HTTPError(`Issue Creating Account`, 500);
+
+            return {
+                success: true,
+                account: new_account.element
+            }
+
+        } catch(err) {
+            throw new HTTPError(err.message, 500);
         }
     }
 }

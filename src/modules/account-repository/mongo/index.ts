@@ -5,8 +5,36 @@ import PasswordUtils from "../../../utils/password";
 import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany } from "../../base-repository";
 
 const accountSchema = new Schema<IAccount>({
-    email: { type: String, required: false },
-    mobile: { type: String, required: false },
+    email: { 
+        type: String, 
+        required: false, 
+        unique: true,
+        validate: {
+            validator: async function (value: string) {
+
+                const existingAccount = await this.constructor.findOne({
+                    email: value
+                });
+                return !existingAccount;
+            },
+            message: "Email is already in use",
+        }, 
+    },
+    mobile: { 
+        type: String, 
+        required: false, 
+        unique: true,
+        validate: {
+            validator: async function (value: string) {
+
+                const existingAccount = await this.constructor.findOne({
+                    mobile: value
+                });
+                return !existingAccount;
+            },
+            message: "Mobile number is already in use",
+        },
+    },
     password: { type: String, required: true },
     role: { type: String, default: 'user' }
   }, {
@@ -26,7 +54,6 @@ export class MongoAccountRepository implements IAccountRepository {
     }
 
     async create(data: Partial<IAccount>): Promise<IRepositoryCreateResponse<IAccount>> {
-        if(!data.email && !data.mobile) throw new Error('email or mobile needed');
         if(data.password) data.password = await PasswordUtils.hash(data.password);
         const createdAccount = await this.model.create(data);
         delete createdAccount.toObject().password;
