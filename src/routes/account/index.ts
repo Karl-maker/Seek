@@ -58,8 +58,8 @@ export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     server.app.delete(`${ROUTE}/deactivate`, authenticate(localJWTAuthentication), accountController.deactivateAccountById(accountRepository));
     server.app.patch(`${ROUTE}/:account_id`, authenticate(localJWTAuthentication, 'admin'), accountController.updateAccountById(accountRepository));
     server.app.post(`${ROUTE}`, authenticate(localJWTAuthentication, 'admin'), accountController.createAccount(accountRepository));
-    server.app.post(`${ROUTE}/confirm`, authenticate(localJWTAuthentication), accountController.checkConfirmationCode(accountConfirmation));
-    server.app.get(`${ROUTE}/confirm`, authenticate(localJWTAuthentication), accountController.sendConfirmationCode(accountRepository, accountConfirmation));
+    server.app.post(`${ROUTE}/confirmation`, authenticate(localJWTAuthentication), accountController.checkConfirmationCode(accountConfirmation));
+    server.app.get(`${ROUTE}/confirmation`, authenticate(localJWTAuthentication), accountController.sendConfirmationCode(accountRepository, accountConfirmation));
     server.app.delete(`${ROUTE}/:account_id`, authenticate(localJWTAuthentication, 'admin'), accountController.deleteAccountById(accountRepository));
 
 }
