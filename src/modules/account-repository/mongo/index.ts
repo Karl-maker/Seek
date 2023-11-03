@@ -5,6 +5,8 @@ import PasswordUtils from "../../../utils/password";
 import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany } from "../../base-repository";
 
 const accountSchema = new Schema<IAccount>({
+    first_name: { type: String, required: true },
+    last_name: { type: String, required: true },
     email: { 
         type: String, 
         required: false, 

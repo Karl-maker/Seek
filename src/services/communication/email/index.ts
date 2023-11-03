@@ -1,7 +1,7 @@
-import ISendConfirmation from "..";
+import ICommunication from "..";
 import IEmail, { IEmailInput } from "../../../helpers/email";
 
-export default class SendConfirmationViaEmail implements ISendConfirmation<IEmailInput> {
+export default class CommunicationViaEmail implements ICommunication<IEmailInput> {
 
     emailSender: IEmail;
 

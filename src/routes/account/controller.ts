@@ -5,11 +5,20 @@ import IMessengerQueue from '../../helpers/event';
 import { AccountTopics, IAccountLoginPayload, IAccountSignupPayload } from '../../events/account';
 import { IAccountRepository } from '../../modules/account-repository';
 import { getAccessTokenFromHeader } from '../../utils/bearer-token';
+import IRetrieveRefreshToken from '../../services/retrieve-refresh-token';
+import IAccountConfirmation from '../../services/account-confirmation';
 
 export default class AccountController {
     event: IMessengerQueue;
     constructor(messengerQueue: IMessengerQueue) {
         this.event = messengerQueue;
+    }
+
+    getRefreshTokenFromRequest(retrieveRefreshToken: IRetrieveRefreshToken) {
+        return (req: Request, res: Response, next: NextFunction) => {
+            req['refresh_token'] = retrieveRefreshToken.retrieve(req);
+            next();
+        }
     }
 
     signup(accountAuthentication: IAccountAuthentication){
@@ -21,7 +30,7 @@ export default class AccountController {
                 });
         
                 if(result.success) {
-                    req.result = result.account;
+                    req['result'] = result.account;
 
                     const payload: IAccountSignupPayload = {
                         account: result.account
@@ -48,7 +57,7 @@ export default class AccountController {
     logout(accountAuthentication: IAccountAuthentication){
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
-                const result = await accountAuthentication.logout(req.user.id);
+                const result = await accountAuthentication.logout(req['refresh_token']);
 
                 if(!result.success) {
                     throw new HTTPError(`Issue Logging Out`, 500);
@@ -56,6 +65,25 @@ export default class AccountController {
 
                 res.json({
                     message: 'Logout Successful'
+                });
+
+            } catch(err) {
+                next(err);
+            }
+        }
+    }
+
+    getAccessToken(accountAuthentication: IAccountAuthentication){
+        return async (req: Request, res: Response, next: NextFunction) => {
+            try{
+                const result = await accountAuthentication.refresh(req['refresh_token']);
+
+                if(!result.access_token) {
+                    throw new HTTPError(`Issue Getting Access Token`, 500);
+                }
+
+                res.json({
+                    access_token: result.access_token
                 });
 
             } catch(err) {
@@ -205,7 +233,7 @@ export default class AccountController {
     deactivateAccountById(accountRepository: IAccountRepository){
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
-                const result = await accountRepository.updateById(req.user.id, {
+                const result = await accountRepository.updateById(req['user'].id, {
                     status: 'deactivated'
                 });
 
@@ -220,6 +248,32 @@ export default class AccountController {
             } catch(err) {
                 next(err);
             }
+        }
+    }
+
+    sendConfirmationCode(accountRepository: IAccountRepository, accountConfirmation: IAccountConfirmation) {
+        return async (req: Request, res: Response, next: NextFunction) => {
+            const account = await accountRepository.findById(req['user'].id);
+            accountConfirmation.generate(account);
+
+            res.json({
+                message: `Check your ${account['mobile'] ? 'mobile messages' : 'email'} for confirmation code`
+            })
+        }
+    }
+
+    checkConfirmationCode(accountConfirmation: IAccountConfirmation) {
+        return async (req: Request, res: Response, next: NextFunction) => {
+
+            const result = await accountConfirmation.check(req['user'].id, req.body.code);
+            let message = "Account Failed To Be Confirmed"
+            if(result.confirmed) {
+                message = "Account Confirmed"
+            }
+
+            res.json({
+               message
+            })
         }
     }
 }

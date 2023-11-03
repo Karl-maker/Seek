@@ -1,9 +1,12 @@
-import { IAccountRepository } from "../../modules/account-repository";
+import { IEmailInput } from "../../helpers/email";
+import { IAccountConfirmationRepository } from "../../modules/account-confirmation-repository";
+import { IAccount, IAccountRepository } from "../../modules/account-repository";
 
 export default interface IAccountConfirmation {
     accountRepository: IAccountRepository;
-    generate(account_id: string): Promise<IGenerateResponse>;
-    check(confirmation: string): Promise<ICheckResponse>;
+    accountConfirmationRepository: IAccountConfirmationRepository;
+    generate(account: Partial<IAccount>): Promise<IGenerateResponse>;
+    check(account_id: string, confirmation: string): Promise<ICheckResponse>;
 }
 
 export interface IGenerateResponse {

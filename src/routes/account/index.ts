@@ -6,9 +6,16 @@ import JWTService from "../../helpers/token/jwt";
 import { authenticate } from "../../middlewares/auth";
 import { IAccountRepository } from "../../modules/account-repository";
 import { MongoAccountRepository } from "../../modules/account-repository/mongo";
-import IAccountAuthentication, { IAuthorizePayload } from "../../services/account-authentication";
+import { ILoginRepository } from "../../modules/login-repository";
+import { MongoLoginRepository } from "../../modules/login-repository/mongo";
+import IAccountAuthentication, { IAuthorizePayload, IRefreshTokenPayload } from "../../services/account-authentication";
 import LocalAccountAuthentication from "../../services/account-authentication/local";
+import IAccountConfirmation from "../../services/account-confirmation";
+import AccountConfirmationWithPin from "../../services/account-confirmation/pin";
+import IRetrieveRefreshToken from "../../services/retrieve-refresh-token";
+import RetrieveRefreshTokenFromWeb from "../../services/retrieve-refresh-token/web";
 import AccountController from "./controller";
+import cookieParser from "cookie-parser";
 
 const ROUTE = '/account';
 const accessTokenManager = new JWTService<IAuthorizePayload>(
@@ -19,7 +26,7 @@ const accessTokenManager = new JWTService<IAuthorizePayload>(
         issuer: config.token.access.issuer,
     }
 );
-const refreshTokenManager = new JWTService<IAuthorizePayload>(
+const refreshTokenManager = new JWTService<IRefreshTokenPayload>(
     {
         expiration: '30d',
         publicKey: config.token.refresh.public,
@@ -28,18 +35,31 @@ const refreshTokenManager = new JWTService<IAuthorizePayload>(
     }
 );
 
+const retrieveRefreshToken: IRetrieveRefreshToken = new RetrieveRefreshTokenFromWeb();
+
 export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     const accountController = new AccountController(event);
     const accountRepository: IAccountRepository = new MongoAccountRepository(db);
-    const localJWTAuthentication: IAccountAuthentication = new LocalAccountAuthentication(accountRepository, accessTokenManager, refreshTokenManager);
+    const loginRepository: ILoginRepository = new MongoLoginRepository(db);
+    const localJWTAuthentication: IAccountAuthentication = new LocalAccountAuthentication(
+        accountRepository, 
+        loginRepository, 
+        accessTokenManager, 
+        refreshTokenManager
+    );
+    const accountConfirmation: IAccountConfirmation = new AccountConfirmationWithPin(accountRepository);
 
     server.app.post(`${ROUTE}/signup`, accountController.signup(localJWTAuthentication));
     server.app.post(`${ROUTE}/login`, accountController.login(localJWTAuthentication));
-    server.app.post(`${ROUTE}/logout`, authenticate(localJWTAuthentication), accountController.logout(localJWTAuthentication));
+    server.app.post(`${ROUTE}/logout`, cookieParser(), accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.logout(localJWTAuthentication));
+    server.app.post(`${ROUTE}/refresh`, cookieParser(),accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.getAccessToken(localJWTAuthentication));
     server.app.get(`${ROUTE}`, accountController.current(localJWTAuthentication, accountRepository));
     server.app.get(`${ROUTE}/:account_id`, authenticate(localJWTAuthentication), accountController.getAccountById(accountRepository));
     server.app.delete(`${ROUTE}/deactivate`, authenticate(localJWTAuthentication), accountController.deactivateAccountById(accountRepository));
     server.app.patch(`${ROUTE}/:account_id`, authenticate(localJWTAuthentication, 'admin'), accountController.updateAccountById(accountRepository));
     server.app.post(`${ROUTE}`, authenticate(localJWTAuthentication, 'admin'), accountController.createAccount(accountRepository));
+    server.app.post(`${ROUTE}/confirm`, authenticate(localJWTAuthentication), accountController.checkConfirmationCode(accountConfirmation));
+    server.app.get(`${ROUTE}/confirm`, authenticate(localJWTAuthentication), accountController.sendConfirmationCode(accountRepository, accountConfirmation));
     server.app.delete(`${ROUTE}/:account_id`, authenticate(localJWTAuthentication, 'admin'), accountController.deleteAccountById(accountRepository));
+
 }

@@ -2,7 +2,7 @@ import IEmail, { IConfirmationCodeContext, IConfirmationLinkContext, IEmailInput
 import sendEmail from "./method";
 
 
-export default class INodeMailer implements IEmail {
+export default class NodeMailer implements IEmail {
 
     async send(input: IEmailInput) {
 

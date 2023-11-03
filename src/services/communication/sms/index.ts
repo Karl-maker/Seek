@@ -1,7 +1,7 @@
-import ISendConfirmation from "..";
+import ICommunication from "..";
 import ISMS from "../../../helpers/sms";
 
-export default class SendConfirmationViaSMS implements ISendConfirmation<ISMSInput> {
+export default class CommunicationViaSMS implements ICommunication<ISMSInput> {
 
     smsSender: ISMS;
 

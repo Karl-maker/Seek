@@ -1,13 +1,14 @@
 import ISMS from './'; // Import the ISMS interface
 import { Twilio } from 'twilio'; // Import the Twilio library
+import {config} from "../../../config";
 
 export default class TwilioSMS implements ISMS {
     private client: Twilio;
     from: string;
 
-    constructor(from: string, accountSid: string, authToken: string) {
-        this.client = new Twilio(accountSid, authToken);
-        this.from = from;
+    constructor() {
+        this.client = new Twilio(config.twilio.account_sid, config.twilio.auth_token);
+        this.from = config.twilio.number;
     }
 
     async send(mobile: string, message: string): Promise<void> {

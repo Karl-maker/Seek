@@ -4,7 +4,8 @@ export default interface IAccountAuthentication {
     accountRepository: IAccountRepository;
     login(credentials: ICredentials): Promise<ILoginResponse>;
     authorize(access_token: string): Promise<IAuthorizePayload>;
-    logout(account_id: string): Promise<ILogoutResponse>;
+    refresh(cred: string): Promise<IRefreshPayload>;
+    logout(cred: string): Promise<ILogoutResponse>;
     signup(data: IAccount): Promise<ISignupResponse>;
 }
 
@@ -14,7 +15,14 @@ export interface IAuthorizePayload {
 }
 
 export interface IRefreshPayload {
-    access_token: string;
+    access_token?: string;
+}
+
+export interface IRefreshTokenPayload {
+    sub: string | number;
+    session: {
+        id: string
+    };
 }
 
 export interface ILoginResponse {
