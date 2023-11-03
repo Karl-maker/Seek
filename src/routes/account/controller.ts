@@ -45,6 +45,25 @@ export default class AccountController {
         }
     }
 
+    logout(accountAuthentication: IAccountAuthentication){
+        return async (req: Request, res: Response, next: NextFunction) => {
+            try{
+                const result = await accountAuthentication.logout(req.user.id);
+
+                if(!result.success) {
+                    throw new HTTPError(`Issue Logging Out`, 500);
+                }
+
+                res.json({
+                    message: 'Logout Successful'
+                });
+
+            } catch(err) {
+                next(err);
+            }
+        }
+    }
+
     login(accountAuthentication: IAccountAuthentication){
         return async (req: Request, res: Response, next: NextFunction) => {
             try{

@@ -1,10 +1,10 @@
-import IEmail, { IConfirmationCodeContext, IConfirmationLinkContext, IInformationContext, templates } from "..";
+import IEmail, { IConfirmationCodeContext, IConfirmationLinkContext, IEmailInput, IInformationContext, templates } from "..";
 import sendEmail from "./method";
 
 
 export default class INodeMailer implements IEmail {
 
-    async send(subject: string, to: string, template: templates, context: IInformationContext | IConfirmationCodeContext | IConfirmationLinkContext) {
+    async send(input: IEmailInput) {
 
         function enumToString(enumValue: any): string {
             const enumKey = Object.keys(templates).find(
@@ -12,6 +12,13 @@ export default class INodeMailer implements IEmail {
             );
             return enumKey || 'information'; // Return 'Unknown' if not found.
         }
+
+        const {
+            to,
+            subject,
+            template,
+            context
+        } = input;
 
         await sendEmail(
             to,

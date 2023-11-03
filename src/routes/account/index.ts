@@ -35,6 +35,7 @@ export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
 
     server.app.post(`${ROUTE}/signup`, accountController.signup(localJWTAuthentication));
     server.app.post(`${ROUTE}/login`, accountController.login(localJWTAuthentication));
+    server.app.post(`${ROUTE}/logout`, authenticate(localJWTAuthentication), accountController.logout(localJWTAuthentication));
     server.app.get(`${ROUTE}`, accountController.current(localJWTAuthentication, accountRepository));
     server.app.get(`${ROUTE}/:account_id`, authenticate(localJWTAuthentication), accountController.getAccountById(accountRepository));
     server.app.delete(`${ROUTE}/deactivate`, authenticate(localJWTAuthentication), accountController.deactivateAccountById(accountRepository));

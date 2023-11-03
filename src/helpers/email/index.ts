@@ -1,16 +1,18 @@
 export default interface IEmail {
-    send(
-        subject: string, 
-        to: string, 
-        template: templates,
-        context: IInformationContext | IConfirmationCodeContext | IConfirmationLinkContext
-        )
+    send(input: IEmailInput)
 }
 
 export enum templates {
     Information = "information",
     ConfirmationCode = "confirmation-code",
     ConfirmationLink = "confirmation-link"
+}
+
+export interface IEmailInput {
+    subject: string, 
+    to: string, 
+    template: templates,
+    context: IInformationContext | IConfirmationCodeContext | IConfirmationLinkContext
 }
 
 export interface IInformationContext {
