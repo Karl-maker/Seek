@@ -5,14 +5,19 @@ export default interface IEmail {
 export enum templates {
     Information = "information",
     ConfirmationCode = "confirmation-code",
-    ConfirmationLink = "confirmation-link"
+    ConfirmationLink = "confirmation-link",
+    PasswordRecovery = "password-recovery"
+}
+
+export interface IPasswordRecoveryContext extends IInformationContext {
+    url: string
 }
 
 export interface IEmailInput {
-    subject: string, 
-    to: string, 
-    template: templates,
-    context: IInformationContext | IConfirmationCodeContext | IConfirmationLinkContext
+    subject: string;
+    to: string;
+    template: templates;
+    context: IInformationContext | IConfirmationCodeContext | IConfirmationLinkContext | IPasswordRecoveryContext;
 }
 
 export interface IInformationContext {

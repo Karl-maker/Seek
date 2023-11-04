@@ -47,6 +47,9 @@ export const config = {
       password: env.NODEMAILER_PASS
     }
   },
+  client: {
+    url: env.SELF_URL || 'http://localhost:3000'
+  },
   token: {
     access: {
       public: 'secret',
@@ -54,6 +57,11 @@ export const config = {
       issuer: ""
     },
     refresh: {
+      public: 'secret',
+      private: 'secret',
+      issuer: ""
+    },
+    general: {
       public: 'secret',
       private: 'secret',
       issuer: ""

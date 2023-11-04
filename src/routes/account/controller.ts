@@ -7,6 +7,10 @@ import { IAccountRepository } from '../../modules/account-repository';
 import { getAccessTokenFromHeader } from '../../utils/bearer-token';
 import IRetrieveRefreshToken from '../../services/retrieve-refresh-token';
 import IAccountConfirmation from '../../services/account-confirmation';
+import IAccountPasswordRecovery from '../../services/account-recovery';
+import { IPasswordRecoveryToken } from '../../services/account-recovery/token';
+import JWTService from '../../helpers/token/jwt';
+import password from '../../utils/password';
 
 export default class AccountController {
     event: IMessengerQueue;
@@ -274,6 +278,45 @@ export default class AccountController {
             res.json({
                message
             })
+        }
+    }
+
+    recoverPassword(passwordRecovery: IAccountPasswordRecovery) {
+        return async(req: Request, res: Response, next: NextFunction) => {
+            try {
+                const {
+                    email,
+                    mobile
+                } = req.query;
+
+                await passwordRecovery.sendRecoveryDetails({
+                    email: String(email || ''), 
+                    mobile: String(mobile || '')
+                });
+
+                res.json({
+                    message: `Check ${mobile ? "mobile messages" : "email inbox"} for password recovery details`
+                })
+            } catch(err) {
+                next(err)
+            }
+        }
+    }
+
+    resetPasswordWithToken(accountRepository: IAccountRepository, tokenManager: JWTService<IPasswordRecoveryToken>) {
+        return async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                const payload = await tokenManager.verifyToken(String(req["query"].token || ""));
+                await accountRepository.updateById(payload.sub, {
+                    password: await password.hash(req.body.password)
+                });
+
+                res.json({
+                    message: "Password Updated"
+                })
+            } catch(err) {
+                next(err)
+            }
         }
     }
 }
