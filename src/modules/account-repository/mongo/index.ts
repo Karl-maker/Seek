@@ -64,6 +64,9 @@ export class MongoAccountRepository implements IAccountRepository {
     }
 
     async updateById(id: string | number, data: Partial<IAccount | null>): Promise<IRepositoryUpdateByIdResponse<IAccount>> {
+
+        if(data.password) data.password = await PasswordUtils.hash(data.password);
+
         const updatedAccount = await this.model.findByIdAndUpdate(id, data, { new: true });
         if (!updatedAccount) {
           return { 

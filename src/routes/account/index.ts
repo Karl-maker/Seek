@@ -12,7 +12,7 @@ import IAccountAuthentication, { IAuthorizePayload, IRefreshTokenPayload } from 
 import LocalAccountAuthentication from "../../services/account-authentication/local";
 import IAccountConfirmation from "../../services/account-confirmation";
 import AccountConfirmationWithPin from "../../services/account-confirmation/pin";
-import IAccountPasswordRecovery, { IPasswordRecovery } from "../../services/account-recovery";
+import IAccountPasswordRecovery from "../../services/account-recovery";
 import AccountPasswordRecoveryWithToken, { IPasswordRecoveryToken } from "../../services/account-recovery/token";
 import IRetrieveRefreshToken from "../../services/retrieve-refresh-token";
 import RetrieveRefreshTokenFromWeb from "../../services/retrieve-refresh-token/web";
