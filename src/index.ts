@@ -6,7 +6,6 @@ import { config } from "./config";
 import NodeEvent from "./helpers/event/node";
 import IMessengerQueue from "./helpers/event";
 import MongoDB, { IMongoDB } from "./helpers/database/mongo";
-import IDatabase from "./helpers/database";
 import { IBucketStorage } from "./helpers/bucket";
 import { FileSystemBucket } from "./helpers/bucket/file-system";
 import accountRoutes from "./routes/account";
@@ -27,6 +26,7 @@ const bucket: IBucketStorage = new FileSystemBucket('../storage');
     await database.connect();
     // Add controllers, events and middlewares here..
 
+    server.app.use(express.json())
     server.app.set('view engine', 'handlebars');
     server.app.engine('.handlebars', engine({extname: 'handlebars'}));
     

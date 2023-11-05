@@ -23,7 +23,7 @@ export default class JWTService<T> implements ITokenManager<T> {
     return jwt.sign(payload, privateKey, {
       expiresIn: expiration,
       issuer,
-      algorithm: 'RS256', // Use the RS256 algorithm for private/public key pair
+      // algorithm: 'RS256', // Use the RS256 algorithm for private/public key pair
     });
   }
 
@@ -31,7 +31,9 @@ export default class JWTService<T> implements ITokenManager<T> {
   verifyToken(token: string): T | null {
     try {
       const { publicKey } = this.config;
-      return jwt.verify(token, publicKey, { algorithms: ['RS256'] });
+      return jwt.verify(token, publicKey, { 
+        //algorithms: ['RS256']
+      });
     } catch (error) {
       // If token is invalid or expired, return null
       return null;

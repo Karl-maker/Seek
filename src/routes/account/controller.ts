@@ -128,10 +128,9 @@ export default class AccountController {
                     throw new HTTPError(`Not Authorized`, 403);
                 }
 
-                const account = await accountRepository.findOne({
-                    id: result.sub,
-                    status: 'active'
-                });
+                const account = await accountRepository.findById(result.sub);
+
+                if(account.status !== "active") throw new HTTPError('No Account Found', 404)
 
                 if(!account){
                     throw new HTTPError(`No Account Found`, 404);
@@ -153,6 +152,8 @@ export default class AccountController {
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
                 const result = await accountRepository.findById(req.params.account_id);
+
+                delete result.password;
 
                 if(!result) {
                     throw new HTTPError(`No Account Found`, 404);

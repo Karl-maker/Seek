@@ -31,7 +31,7 @@ export class MongoLoginRepository implements ILoginRepository {
             ...data
         });
 
-        return loginDetails.toObject()
+        return { element: loginDetails.toObject() }
     }
     async updateById(id: string | number, data: Partial<ILogin>): Promise<IRepositoryUpdateByIdResponse<ILogin>> {
 
