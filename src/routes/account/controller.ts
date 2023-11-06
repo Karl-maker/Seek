@@ -20,8 +20,12 @@ export default class AccountController {
 
     getRefreshTokenFromRequest(retrieveRefreshToken: IRetrieveRefreshToken) {
         return (req: Request, res: Response, next: NextFunction) => {
-            req['refresh_token'] = retrieveRefreshToken.retrieve(req);
-            next();
+            try{
+                req['refresh_token'] = retrieveRefreshToken.retrieve(req);
+                next();
+            } catch(err) {
+                next(err);
+            }
         }
     }
 
@@ -258,12 +262,16 @@ export default class AccountController {
 
     sendConfirmationCode(accountRepository: IAccountRepository, accountConfirmation: IAccountConfirmation) {
         return async (req: Request, res: Response, next: NextFunction) => {
-            const account = await accountRepository.findById(req['user'].id);
-            accountConfirmation.generate(account);
-
-            res.json({
-                message: `Check your ${account['mobile'] ? 'mobile messages' : 'email'} for confirmation code`
-            })
+            try{
+                const account = await accountRepository.findById(req['user'].id);
+                accountConfirmation.generate(account);
+    
+                res.json({
+                    message: `Check your ${account['mobile'] ? 'mobile messages' : 'email'} for confirmation code`
+                })
+            }catch (err) {
+                next(err);
+            }
         }
     }
 
