@@ -9,8 +9,8 @@ export default class CommunicationViaEmail implements ICommunication<IEmailInput
         this.emailSender = emailSender;
     }
 
-    send(input: IEmailInput): Promise<void> {
-        throw new Error("Method not implemented.");
+    async send(input: IEmailInput): Promise<void> {
+        await this.emailSender.send(input);
     }
 
 }

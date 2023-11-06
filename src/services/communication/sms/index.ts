@@ -10,7 +10,7 @@ export default class CommunicationViaSMS implements ICommunication<ISMSInput> {
     }
 
     async send(input: ISMSInput): Promise<void> {
-        this.smsSender.send(input.to, input.message);
+        await this.smsSender.send(input.to, input.message);
     }
 
 }
