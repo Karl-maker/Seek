@@ -64,6 +64,10 @@ const passwordRecoveryManager = new JWTService<IPasswordRecoveryToken>(
 
 const retrieveRefreshToken: IRetrieveRefreshToken = new RetrieveRefreshTokenFromWeb();
 
+/**
+ * @TODO add validation
+ */
+
 export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     const accountController = new AccountController(event);
     const accountRepository: IAccountRepository = new MongoAccountRepository(db);
