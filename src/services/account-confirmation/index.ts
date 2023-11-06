@@ -1,8 +1,11 @@
-import { IEmailInput } from "../../helpers/email";
+import IEmail, { IEmailInput } from "../../helpers/email";
+import ISMS from "../../helpers/sms";
 import { IAccountConfirmationRepository } from "../../modules/account-confirmation-repository";
 import { IAccount, IAccountRepository } from "../../modules/account-repository";
 
 export default interface IAccountConfirmation {
+    sms: ISMS;
+    email: IEmail;
     accountRepository: IAccountRepository;
     accountConfirmationRepository: IAccountConfirmationRepository;
     generate(account: Partial<IAccount>): Promise<IGenerateResponse>;

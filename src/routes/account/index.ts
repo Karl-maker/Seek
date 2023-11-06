@@ -1,7 +1,11 @@
 import { config } from "../../config";
 import { IMongoDB } from "../../helpers/database/mongo";
+import IEmail from "../../helpers/email";
+import NodeMailer from "../../helpers/email/nodemailer";
 import IMessengerQueue from "../../helpers/event";
 import NodeServer from "../../helpers/server"
+import ISMS from "../../helpers/sms";
+import TwilioSMS from "../../helpers/sms/twilio";
 import JWTService from "../../helpers/token/jwt";
 import { authenticate } from "../../middlewares/auth";
 import { IAccountRepository } from "../../modules/account-repository";
@@ -20,6 +24,17 @@ import AccountController from "./controller";
 import cookieParser from "cookie-parser";
 
 const ROUTE = '/account';
+const sms: ISMS = new TwilioSMS(config.twilio.account_sid, config.twilio.auth_token, config.twilio.number);
+const email: IEmail = new NodeMailer({
+    service: config.nodemailer.service,
+    host: config.nodemailer.host,
+    port: Number(config.nodemailer.port),
+    auth: {
+        user: config.nodemailer.auth.user,
+        pass: config.nodemailer.auth.password,
+    },
+    secure: false
+})
 const accessTokenManager = new JWTService<IAuthorizePayload>(
     {
         expiration: '30m',
@@ -51,14 +66,9 @@ export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     const accountController = new AccountController(event);
     const accountRepository: IAccountRepository = new MongoAccountRepository(db);
     const loginRepository: ILoginRepository = new MongoLoginRepository(db);
-    const localJWTAuthentication: IAccountAuthentication = new LocalAccountAuthentication(
-        accountRepository, 
-        loginRepository, 
-        accessTokenManager, 
-        refreshTokenManager
-    );
-    const accountConfirmation: IAccountConfirmation = new AccountConfirmationWithPin(accountRepository);
-    const passwordRecovery: IAccountPasswordRecovery = new AccountPasswordRecoveryWithToken(accountRepository, passwordRecoveryManager);
+    const localJWTAuthentication: IAccountAuthentication = new LocalAccountAuthentication(accountRepository, loginRepository, accessTokenManager, refreshTokenManager);
+    const accountConfirmation: IAccountConfirmation = new AccountConfirmationWithPin(accountRepository, sms, email);
+    const passwordRecovery: IAccountPasswordRecovery = new AccountPasswordRecoveryWithToken(accountRepository, passwordRecoveryManager, sms, email);
 
     server.app.post(`${ROUTE}/signup`, accountController.signup(localJWTAuthentication));
     server.app.post(`${ROUTE}/login`, accountController.login(localJWTAuthentication));

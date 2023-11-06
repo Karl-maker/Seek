@@ -1,8 +1,25 @@
 import IEmail, { IConfirmationCodeContext, IConfirmationLinkContext, IEmailInput, IInformationContext, templates } from "..";
 import sendEmail from "./method";
 
+export interface INodeMailerConfig {
+    service: string;
+    host: string;
+    port: number;
+    auth: {
+        user: string;
+        pass: string;
+    },
+    secure: boolean;
+}
+
 
 export default class NodeMailer implements IEmail {
+
+    config: INodeMailerConfig;
+    
+    constructor(config: INodeMailerConfig){
+        this.config = config;
+    }
 
     async send(input: IEmailInput) {
 
@@ -20,11 +37,14 @@ export default class NodeMailer implements IEmail {
             context
         } = input;
 
-        await sendEmail(
-            to,
-            subject,
-            enumToString(template),
-            context
+        await sendEmail.call(
+            this.config, 
+            [
+                to,
+                subject,
+                enumToString(template),
+                context,    
+            ]
         );
     }
 

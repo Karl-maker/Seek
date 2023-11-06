@@ -5,21 +5,21 @@ const handlebars = require('nodemailer-express-handlebars');
 
 const EMAIL = config.nodemailer;
 
-module.exports = async (
+module.exports = async function (
   to,
   subject,
   template = 'Information',
   context
-) => {
+){
   try {
     const transporter = nodemailer.createTransport({
-      service: EMAIL.service,
-      host: EMAIL.host,
-      port: EMAIL.port,
-      secureConnection: "false",
+      service: this.service,
+      host: this.host,
+      port: this.port,
+      secureConnection: this.secure,
       auth: {
-        user: EMAIL.auth.user,
-        pass: EMAIL.auth.password,
+        user: this.auth.user,
+        pass: this.auth.password,
       },
       tls: {
         ciphers: 'SSLv3'
@@ -36,14 +36,14 @@ module.exports = async (
     }));
 
     const mailOptions = {
-      from: EMAIL.auth.user,
+      from: this.auth.user,
       to,
       subject,
       template: checkTemplate(template),
       context: {
         year: new Date().getFullYear(),
         ...context
-      }
+      },
     };
 
     transporter.sendMail(mailOptions, function (error) {

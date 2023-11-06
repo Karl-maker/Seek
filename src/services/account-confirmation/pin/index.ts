@@ -1,22 +1,22 @@
 import IAccountConfirmation, { IGenerateResponse, ICheckResponse } from "..";
-import { IEmailInput, templates } from "../../../helpers/email";
-import NodeMailer from "../../../helpers/email/nodemailer";
-import TwilioSMS from "../../../helpers/sms/twilio";
+import IEmail, { IEmailInput, templates } from "../../../helpers/email";
 import { IAccountConfirmationRepository } from "../../../modules/account-confirmation-repository";
 import { IAccount, IAccountRepository } from "../../../modules/account-repository";
 import { generateRandomPin } from "../../../utils/pin";
 import CommunicationViaSMS, { ISMSInput } from "../../communication/sms";
 import CommunicationViaEmail from "../../communication/email";
-
-const twilio = new TwilioSMS();
-const nodemailer = new NodeMailer();
+import ISMS from "../../../helpers/sms";
 
 export default class AccountConfirmationWithPin implements IAccountConfirmation {
+    sms: ISMS;
+    email: IEmail;
     accountRepository: IAccountRepository;
     accountConfirmationRepository: IAccountConfirmationRepository;
 
-    constructor(accountRepository: IAccountRepository) {
-        this.accountRepository = accountRepository
+    constructor(accountRepository: IAccountRepository, sms: ISMS, email: IEmail) {
+        this.accountRepository = accountRepository;
+        this.sms = sms;
+        this.email = email;
     }
 
     async generate(account: Partial<IAccount>): Promise<IGenerateResponse> {
@@ -39,13 +39,13 @@ export default class AccountConfirmationWithPin implements IAccountConfirmation 
                     header: 'Confirmation Code'
                 }
             }
-            await new CommunicationViaEmail(nodemailer).send(config);
+            await new CommunicationViaEmail(this.email).send(config);
         } else if (account['mobile']) {
             const config: ISMSInput = {
                 message: `Confirm your account with this code: ${code}`,
                 to: account["mobile"]
             }
-            await new CommunicationViaSMS(twilio).send(config);
+            await new CommunicationViaSMS(this.sms).send(config);
         }
 
         return {

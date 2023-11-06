@@ -7,10 +7,10 @@ export default class TwilioSMS implements ISMS {
     private client: Twilio;
     from: string;
 
-    constructor() {
+    constructor(accoundSid: string, authToken: string, fromNo: string) {
         try{
-            this.client = new Twilio(config.twilio.account_sid, config.twilio.auth_token);
-            this.from = config.twilio.number;
+            this.client = new Twilio(accoundSid, authToken);
+            this.from = fromNo;
         } catch(err) {
             logger.error(err, `Issue at TwilioSMS constructor`)
         }

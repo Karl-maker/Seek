@@ -1,25 +1,30 @@
 import IAccountPasswordRecovery, { IPasswordRecovery } from "..";
 import { IAccountRepository } from "../../../modules/account-repository";
-import NodeMailer from "../../../helpers/email/nodemailer";
-import TwilioSMS from "../../../helpers/sms/twilio";
 import CommunicationViaSMS, { ISMSInput } from "../../communication/sms";
 import CommunicationViaEmail from "../../communication/email";
-import { IEmailInput, templates } from "../../../helpers/email";
+import IEmail, { IEmailInput, templates } from "../../../helpers/email";
 import { config as CONFIG } from "../../../config";
 import { ITokenManager } from "../../../helpers/token";
-
-const twilio = new TwilioSMS();
-const nodemailer = new NodeMailer();
+import ISMS from "../../../helpers/sms";
 
 export interface IPasswordRecoveryToken {
     sub: string;
 }
 
 export default class AccountPasswordRecoveryWithToken implements IAccountPasswordRecovery {
+    sms: ISMS;
+    email: IEmail;
     accountRepository: IAccountRepository;
     resetPasswordToken: ITokenManager<IPasswordRecoveryToken>;
 
-    constructor(accountRepository: IAccountRepository, resetPasswordToken: ITokenManager<IPasswordRecoveryToken>) {
+    constructor(
+        accountRepository: IAccountRepository, 
+        resetPasswordToken: ITokenManager<IPasswordRecoveryToken>,
+        sms: ISMS,
+        email: IEmail
+        ) {
+        this.sms = sms;
+        this.email = email;
         this.accountRepository = accountRepository;
         this.resetPasswordToken = resetPasswordToken;
     }
@@ -48,13 +53,13 @@ export default class AccountPasswordRecoveryWithToken implements IAccountPasswor
                     header: 'Password Recovery'
                 }
             }
-            await new CommunicationViaEmail(nodemailer).send(config);
+            await new CommunicationViaEmail(this.email).send(config);
         } else if (account['mobile']) {
             const config: ISMSInput = {
                 message: `Reset your password with link: ${url}`,
                 to: account["mobile"]
             }
-            await new CommunicationViaSMS(twilio).send(config);
+            await new CommunicationViaSMS(this.sms).send(config);
         }
     }
 }
