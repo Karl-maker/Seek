@@ -6,6 +6,7 @@ import { generateRandomPin } from "../../../utils/pin";
 import CommunicationViaSMS, { ISMSInput } from "../../communication/sms";
 import CommunicationViaEmail from "../../communication/email";
 import ISMS from "../../../helpers/sms";
+import HTTPError from "../../../utils/error";
 
 export default class AccountConfirmationWithPin implements IAccountConfirmation {
     sms: ISMS;
@@ -13,8 +14,14 @@ export default class AccountConfirmationWithPin implements IAccountConfirmation 
     accountRepository: IAccountRepository;
     accountConfirmationRepository: IAccountConfirmationRepository;
 
-    constructor(accountRepository: IAccountRepository, sms: ISMS, email: IEmail) {
+    constructor(
+        accountRepository: IAccountRepository, 
+        accountConfirmationRepository: IAccountConfirmationRepository, 
+        sms: ISMS, 
+        email: IEmail
+        ) {
         this.accountRepository = accountRepository;
+        this.accountConfirmationRepository = accountConfirmationRepository;
         this.sms = sms;
         this.email = email;
     }
@@ -22,6 +29,9 @@ export default class AccountConfirmationWithPin implements IAccountConfirmation 
     async generate(account: Partial<IAccount>): Promise<IGenerateResponse> {
 
         const code = generateRandomPin();
+        await this.accountConfirmationRepository.deleteMany({
+            account_id: account._id
+        });
         await this.accountConfirmationRepository.create({
             account_id: account._id,
             code,
@@ -54,8 +64,18 @@ export default class AccountConfirmationWithPin implements IAccountConfirmation 
         }
         
     }
-    check(account_id: string, confirmation: string): Promise<ICheckResponse> {
-        throw new Error("Method not implemented.");
+    async check(account_id: string, confirmation: string): Promise<ICheckResponse> {
+        const confirmationElement = await this.accountConfirmationRepository.findOne({
+            account_id,
+            code: confirmation
+        });
+
+        if(!confirmationElement) throw new HTTPError('No Confirmation Found', 404);
+
+        return {
+            confirmed: true
+        }
+
     }
 
 }

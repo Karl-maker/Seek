@@ -269,16 +269,19 @@ export default class AccountController {
 
     checkConfirmationCode(accountConfirmation: IAccountConfirmation) {
         return async (req: Request, res: Response, next: NextFunction) => {
-
-            const result = await accountConfirmation.check(req['user'].id, req.body.code);
-            let message = "Account Failed To Be Confirmed"
-            if(result.confirmed) {
-                message = "Account Confirmed"
+            try{
+                const result = await accountConfirmation.check(req['user'].id, req.body.code);
+                let message = "Account Failed To Be Confirmed"
+                if(result.confirmed) {
+                    message = "Account Confirmed"
+                }
+    
+                res.json({
+                   message
+                });
+            } catch(err) {
+                next(err)
             }
-
-            res.json({
-               message
-            })
         }
     }
 

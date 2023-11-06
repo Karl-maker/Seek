@@ -8,6 +8,8 @@ import ISMS from "../../helpers/sms";
 import TwilioSMS from "../../helpers/sms/twilio";
 import JWTService from "../../helpers/token/jwt";
 import { authenticate } from "../../middlewares/auth";
+import { IAccountConfirmationRepository } from "../../modules/account-confirmation-repository";
+import { MongoAccountConfirmationRepository } from "../../modules/account-confirmation-repository/mongo";
 import { IAccountRepository } from "../../modules/account-repository";
 import { MongoAccountRepository } from "../../modules/account-repository/mongo";
 import { ILoginRepository } from "../../modules/login-repository";
@@ -65,13 +67,14 @@ const retrieveRefreshToken: IRetrieveRefreshToken = new RetrieveRefreshTokenFrom
 export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     const accountController = new AccountController(event);
     const accountRepository: IAccountRepository = new MongoAccountRepository(db);
+    const accountConfirmationRepository: IAccountConfirmationRepository = new MongoAccountConfirmationRepository(db);
     const loginRepository: ILoginRepository = new MongoLoginRepository(db);
     const localJWTAuthentication: IAccountAuthentication = new LocalAccountAuthentication(accountRepository, loginRepository, accessTokenManager, refreshTokenManager);
-    const accountConfirmation: IAccountConfirmation = new AccountConfirmationWithPin(accountRepository, sms, email);
+    const accountConfirmation: IAccountConfirmation = new AccountConfirmationWithPin(accountRepository, accountConfirmationRepository, sms, email);
     const passwordRecovery: IAccountPasswordRecovery = new AccountPasswordRecoveryWithToken(accountRepository, passwordRecoveryManager, sms, email);
 
     server.app.post(`${ROUTE}/signup`, accountController.signup(localJWTAuthentication));
-    server.app.post(`${ROUTE}/login`, accountController.login(localJWTAuthentication));
+    server.app.post(`${ROUTE}/login`, accountController.login(localJWTAuthentication)); 
     server.app.post(`${ROUTE}/logout`, cookieParser(), accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.logout(localJWTAuthentication));
     server.app.post(`${ROUTE}/refresh`, cookieParser(),accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.getAccessToken(localJWTAuthentication));
     server.app.get(`${ROUTE}`, accountController.current(localJWTAuthentication, accountRepository));
