@@ -1,6 +1,6 @@
 import IBaseRepository, { IBase } from "../base-repository";
 
-export default interface IServiceProfileRepository extends IBaseRepository<IServiceProfile> {
+export interface IServiceProfileRepository extends IBaseRepository<IServiceProfile> {
 
 } 
 
