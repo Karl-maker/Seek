@@ -101,10 +101,12 @@ export default class LocalAccountAuthentication implements IAccountAuthenticatio
         if (!payload) {
             throw new HTTPError(`Refresh token is invalid or expired`, 401);
         }
-
+        const account = await this.accountRepository.findById(payload.session.id);
+        if(!account) new HTTPError(`Account Not Found`, 404);
         const result = await this.loginRepository.deleteById(payload.session.id);
         return {
-            success: result.success
+            success: result.success,
+            account
         }
     }
 

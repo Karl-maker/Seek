@@ -33,6 +33,7 @@ export interface ILoginResponse {
 
 export interface ILogoutResponse {
     success: boolean;
+    account: Partial<IAccount>;
 }
 
 export interface ICredentials {

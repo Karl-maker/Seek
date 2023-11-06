@@ -2,7 +2,7 @@ import { NextFunction, Response, Request } from 'express';
 import IAccountAuthentication from '../../services/account-authentication';
 import HTTPError from '../../utils/error';
 import IMessengerQueue from '../../helpers/event';
-import { AccountTopics, IAccountLoginPayload, IAccountSignupPayload } from '../../events/account';
+import { AccountTopics, IAccountDeactivatePayload, IAccountDeletedPayload, IAccountLoginPayload, IAccountLogoutPayload, IAccountResetPasswordPayload, IAccountSignupPayload } from '../../events/account';
 import { IAccountRepository } from '../../modules/account-repository';
 import { getAccessTokenFromHeader } from '../../utils/bearer-token';
 import IRetrieveRefreshToken from '../../services/retrieve-refresh-token';
@@ -70,6 +70,12 @@ export default class AccountController {
                 if(!result.success) {
                     throw new HTTPError(`Issue Logging Out`, 500);
                 }
+
+                const payload: IAccountLogoutPayload = {
+                    account: result.account
+                }
+
+                this.event.publish(AccountTopics.LOGOUT, payload)
 
                 res.json({
                     message: 'Logout Successful'
@@ -229,6 +235,12 @@ export default class AccountController {
                     throw new HTTPError(`Issue Deleting`, 500);
                 }
 
+                const payload: IAccountDeletedPayload = {
+                    account: result.deletedElement
+                }
+
+                this.event.publish(AccountTopics.DELETE, payload);
+
                 res.json({
                     message: `Delete Successful`
                 });
@@ -242,6 +254,7 @@ export default class AccountController {
     deactivateAccountById(accountRepository: IAccountRepository){
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
+                const reason = req.body.reason;
                 const result = await accountRepository.updateById(req['user'].id, {
                     status: 'deactivated'
                 });
@@ -249,6 +262,13 @@ export default class AccountController {
                 if(!result.success) {
                     throw new HTTPError(`Issue Deactivating`, 500);
                 }
+
+                const payload: IAccountDeactivatePayload = {
+                    account: result.element,
+                    reason
+                };
+
+                this.event.publish(AccountTopics.DEACTIVATE, payload);
 
                 res.json({
                     message: `Deactivated Successful`
@@ -319,9 +339,15 @@ export default class AccountController {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const payload = await tokenManager.verifyToken(String(req["query"].token || ""));
-                await accountRepository.updateById(payload.sub, {
+                const result = await accountRepository.updateById(payload.sub, {
                     password: await password.hash(req.body.password)
                 });
+
+                const eventPayload: IAccountResetPasswordPayload = {
+                    account: result.element
+                }
+
+                this.event.publish(AccountTopics.PASSWORD_RESET, eventPayload)
 
                 res.json({
                     message: "Password Updated"
