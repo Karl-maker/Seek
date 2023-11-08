@@ -7,7 +7,7 @@ import NodeServer from "../../helpers/server"
 import ISMS from "../../helpers/sms";
 import TwilioSMS from "../../helpers/sms/twilio";
 import JWTService from "../../helpers/token/jwt";
-import { authenticate } from "../../middlewares/auth";
+import { authenticate } from "../../middlewares/authorize";
 import { IAccountConfirmationRepository } from "../../modules/account-confirmation-repository";
 import { MongoAccountConfirmationRepository } from "../../modules/account-confirmation-repository/mongo";
 import { IAccountRepository } from "../../modules/account-repository";

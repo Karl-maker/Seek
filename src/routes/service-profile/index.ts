@@ -3,7 +3,7 @@ import { IMongoDB } from "../../helpers/database/mongo";
 import IMessengerQueue from "../../helpers/event";
 import NodeServer from "../../helpers/server"
 import JWTService from "../../helpers/token/jwt";
-import { authenticate } from "../../middlewares/auth";
+import { authenticate } from "../../middlewares/authorize";
 import { IAccountRepository } from "../../modules/account-repository";
 import { MongoAccountRepository } from "../../modules/account-repository/mongo";
 import { IServiceProfileRepository } from "../../modules/service-profile-repository";
