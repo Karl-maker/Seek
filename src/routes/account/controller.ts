@@ -129,16 +129,16 @@ export default class AccountController {
         }
     }
 
-    current(accountAuthentication: IAccountAuthentication, accountRepository: IAccountRepository){
+    current(accountRepository: IAccountRepository){
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
-                const result = await accountAuthentication.authorize(getAccessTokenFromHeader(req));
+                const user = req['user'];
 
-                if(!result.sub) {
+                if(!user.id) {
                     throw new HTTPError(`Not Authorized`, 403);
                 }
 
-                const account = await accountRepository.findById(result.sub);
+                const account = await accountRepository.findById(user.id);
 
                 if(account.status !== "active") throw new HTTPError('No Account Found', 404)
 

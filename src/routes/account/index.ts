@@ -14,8 +14,10 @@ import { IAccountRepository } from "../../modules/account-repository";
 import { MongoAccountRepository } from "../../modules/account-repository/mongo";
 import { ILoginRepository } from "../../modules/login-repository";
 import { MongoLoginRepository } from "../../modules/login-repository/mongo";
-import IAccountAuthentication, { IAuthorizePayload, IRefreshTokenPayload } from "../../services/account-authentication";
+import IAccountAuthentication, { IRefreshTokenPayload } from "../../services/account-authentication";
 import LocalAccountAuthentication from "../../services/account-authentication/local";
+import IAccountAuthorization, { IAuthorizePayload } from "../../services/account-authorization";
+import LocalAccountAuthorization from "../../services/account-authorization/local";
 import IAccountConfirmation from "../../services/account-confirmation";
 import AccountConfirmationWithPin from "../../services/account-confirmation/pin";
 import IAccountPasswordRecovery from "../../services/account-recovery";
@@ -76,19 +78,20 @@ export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     const localJWTAuthentication: IAccountAuthentication = new LocalAccountAuthentication(accountRepository, loginRepository, accessTokenManager, refreshTokenManager);
     const accountConfirmation: IAccountConfirmation = new AccountConfirmationWithPin(accountRepository, accountConfirmationRepository, sms, email);
     const passwordRecovery: IAccountPasswordRecovery = new AccountPasswordRecoveryWithToken(accountRepository, passwordRecoveryManager, sms, email);
+    const localJWTAuthorization: IAccountAuthorization = new LocalAccountAuthorization(accessTokenManager)
 
     server.app.post(`${ROUTE}/signup`, accountController.signup(localJWTAuthentication));
     server.app.post(`${ROUTE}/login`, accountController.login(localJWTAuthentication)); 
     server.app.post(`${ROUTE}/logout`, cookieParser(), accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.logout(localJWTAuthentication));
     server.app.post(`${ROUTE}/refresh`, cookieParser(),accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.getAccessToken(localJWTAuthentication));
-    server.app.get(`${ROUTE}`, accountController.current(localJWTAuthentication, accountRepository));
-    server.app.get(`${ROUTE}/:account_id`, authenticate(localJWTAuthentication), accountController.getAccountById(accountRepository));
-    server.app.delete(`${ROUTE}/deactivate`, authenticate(localJWTAuthentication), accountController.deactivateAccountById(accountRepository));
-    server.app.patch(`${ROUTE}/:account_id`, authenticate(localJWTAuthentication, 'admin'), accountController.updateAccountById(accountRepository));
-    server.app.post(`${ROUTE}`, authenticate(localJWTAuthentication, 'admin'), accountController.createAccount(accountRepository));
-    server.app.post(`${ROUTE}/confirmation`, authenticate(localJWTAuthentication), accountController.checkConfirmationCode(accountConfirmation));
-    server.app.get(`${ROUTE}/confirmation`, authenticate(localJWTAuthentication), accountController.sendConfirmationCode(accountRepository, accountConfirmation));
-    server.app.delete(`${ROUTE}/:account_id`, authenticate(localJWTAuthentication, 'admin'), accountController.deleteAccountById(accountRepository));
+    server.app.get(`${ROUTE}`, authenticate(localJWTAuthorization), accountController.current(accountRepository));
+    server.app.get(`${ROUTE}/:account_id`, authenticate(localJWTAuthorization), accountController.getAccountById(accountRepository));
+    server.app.delete(`${ROUTE}/deactivate`, authenticate(localJWTAuthorization), accountController.deactivateAccountById(accountRepository));
+    server.app.patch(`${ROUTE}/:account_id`, authenticate(localJWTAuthorization, 'admin'), accountController.updateAccountById(accountRepository));
+    server.app.post(`${ROUTE}`, authenticate(localJWTAuthorization, 'admin'), accountController.createAccount(accountRepository));
+    server.app.post(`${ROUTE}/confirmation`, authenticate(localJWTAuthorization), accountController.checkConfirmationCode(accountConfirmation));
+    server.app.get(`${ROUTE}/confirmation`, authenticate(localJWTAuthorization), accountController.sendConfirmationCode(accountRepository, accountConfirmation));
+    server.app.delete(`${ROUTE}/:account_id`, authenticate(localJWTAuthorization, 'admin'), accountController.deleteAccountById(accountRepository));
     server.app.post(`${ROUTE}/reset-password`, accountController.resetPasswordWithToken(accountRepository, passwordRecoveryManager));
     server.app.post(`${ROUTE}/password-recovery`, accountController.recoverPassword(passwordRecovery));
 }

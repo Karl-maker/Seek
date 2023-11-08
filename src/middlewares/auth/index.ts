@@ -1,4 +1,3 @@
-import IAccountAuthentication from "../../services/account-authentication";
 import {
     Response,
     Request,
@@ -6,8 +5,9 @@ import {
 } from 'express';
 import { getAccessTokenFromHeader } from "../../utils/bearer-token";
 import HTTPError from "../../utils/error";
+import IAccountAuthorization from "../../services/account-authorization";
 
-export const authenticate = (accountAuth: IAccountAuthentication, role: 'admin' | 'any' = 'any') => {
+export const authenticate = (accountAuth: IAccountAuthorization, role: 'admin' | 'any' = 'any') => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try{
             const authInfo = await accountAuth.authorize(getAccessTokenFromHeader(req));

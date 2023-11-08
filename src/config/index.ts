@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 
@@ -48,6 +49,9 @@ export const config = {
     }
   },
   client: {
+    url: env.CLIENT_URL || 'http://localhost:4000'
+  },
+  host: {
     url: env.SELF_URL || 'http://localhost:3000'
   },
   token: {
@@ -66,6 +70,9 @@ export const config = {
       private: 'secret',
       issuer: ""
     }
+  },
+  storage: {
+    path: path.join(__dirname, env.STORAGE_PATH || "../../storage")
   }
   // Add other environment variables here...
 };

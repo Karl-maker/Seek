@@ -1,9 +1,10 @@
-import IAccountAuthentication, { IAuthorizePayload, ICredentials, ILoginResponse, ILogoutResponse, IRefreshPayload, ISignupResponse, IRefreshTokenPayload } from "..";
+import IAccountAuthentication, { ICredentials, ILoginResponse, ILogoutResponse, IRefreshPayload, ISignupResponse, IRefreshTokenPayload } from "..";
 import { ITokenManager } from "../../../helpers/token";
 import { IAccount, IAccountRepository } from "../../../modules/account-repository";
 import { ILoginRepository } from "../../../modules/login-repository";
 import HTTPError from "../../../utils/error";
 import PasswordUtils from "../../../utils/password";
+import { IAuthorizePayload } from "../../account-authorization";
 
 export default class LocalAccountAuthentication implements IAccountAuthentication {
     accountRepository: IAccountRepository;
@@ -57,16 +58,6 @@ export default class LocalAccountAuthentication implements IAccountAuthenticatio
             refresh_token,
             account
         }
-    }
-
-    async authorize(access_token: string): Promise<IAuthorizePayload> {
-        const payload = this.accessTokenManager.verifyToken(access_token);
-
-        if (!payload) {
-            throw new HTTPError(`Access token is invalid or expired`, 401);
-        }
-
-        return payload;
     }
 
     async refresh(refresh_token: string): Promise<IRefreshPayload> {

@@ -8,7 +8,8 @@ const serviceProfileSchema = new Schema<IServiceProfile>({
     first_name: { type: String, required: true },
     last_name: { type: String, required: true },
     picture: { type: String, required: false },
-    verified: { type: Boolean, default: false }
+    verified: { type: Boolean, default: false },
+    account_id: { type: Number, required: true },
   }, {
     timestamps: { 
         updatedAt: 'updated_at', 
@@ -16,7 +17,7 @@ const serviceProfileSchema = new Schema<IServiceProfile>({
     } 
 });
 
-export class MongoAccountRepository implements IServiceProfileRepository {
+export class MongoServiceProfileRepository implements IServiceProfileRepository {
     database: IMongoDB;
     model: Model<IServiceProfile>;
 

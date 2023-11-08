@@ -11,11 +11,11 @@ class AwsS3Storage implements IBucketStorage {
     }
 
     // Method for saving file data to the bucket
-    save(path: string, fileData: Buffer, callback: (url: string | null, error?: Error) => void): void {
+    save(path: string, callback: (url: string | null, error?: Error) => void): void {
         const params: S3.PutObjectRequest = {
             Bucket: this.bucketName,
             Key: path,
-            Body: fileData,
+            Body: null,
         };
 
         this.s3.upload(params, (err, data) => {
@@ -23,22 +23,6 @@ class AwsS3Storage implements IBucketStorage {
                 callback(null, err);
             } else {
                 callback(data.Location, null);
-            }
-        });
-    }
-
-    // Method for retrieving file data from the bucket
-    retrieve(path: string, callback: (fileData: Buffer | null, error?: Error) => void): void {
-        const params = {
-            Bucket: this.bucketName,
-            Key: path,
-        };
-
-        this.s3.getObject(params, (err, data) => {
-            if (err) {
-                callback(null, err);
-            } else {
-                callback(data.Body as Buffer, null);
             }
         });
     }
@@ -75,21 +59,6 @@ class AwsS3Storage implements IBucketStorage {
         });
     }
 
-    // Optional method for generating a public URL for a file in the bucket
-    getPublicUrl?(path: string, callback: (url: string | null, error?: Error) => void): void {
-        const params = {
-            Bucket: this.bucketName,
-            Key: path,
-        };
-
-        this.s3.getSignedUrl('getObject', params, (err, url) => {
-            if (err) {
-                callback(null, err);
-            } else {
-                callback(url, null);
-            }
-        });
-    }
 }
 
 export default AwsS3Storage;

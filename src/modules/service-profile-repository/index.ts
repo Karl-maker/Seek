@@ -10,4 +10,5 @@ export interface IServiceProfile extends IBase {
     last_name: string;
     picture?: string;
     verified: boolean;
+    account_id: number;
 }
