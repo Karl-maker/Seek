@@ -3,8 +3,10 @@ import IMessengerQueue from '../../helpers/event';
 import { IAccountRepository } from '../../modules/account-repository';
 import { IServiceProfileRepository } from '../../modules/service-profile-repository';
 import HTTPError from '../../utils/error';
-import { IServiceProfileCreatePayload, IServiceProfileUpdatePayload, IServiceProfileUploadedPicturePayload, ServiceProfileTopics } from '../../events/service-profile';
+import { IServiceProfileCreatePayload, IServiceProfileUpdateLocationPayload, IServiceProfileUpdatePayload, IServiceProfileUploadedPicturePayload, ServiceProfileTopics } from '../../events/service-profile';
 import { IBucketStorage } from '../../helpers/bucket';
+import { IServiceRepository } from '../../modules/service-repository';
+import { IRatingServiceProfileRepository } from '../../modules/rating-service-profile-repository';
 
 export default class ServiceProfileController {
     event: IMessengerQueue;
@@ -52,7 +54,7 @@ export default class ServiceProfileController {
         }
     }
     uploadProfilePicture(storage: IBucketStorage, serviceProfileRepository: IServiceProfileRepository) {
-        return async (res: Response, req: Request, next: NextFunction) => {
+        return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const account_id = req['user'].id;
                 const service = await serviceProfileRepository.findById(account_id);
@@ -74,7 +76,7 @@ export default class ServiceProfileController {
         }
     }
     removeProfilePicture(storage: IBucketStorage, serviceProfileRepository: IServiceProfileRepository) {
-        return async (res: Response, req: Request, next: NextFunction) => {
+        return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const account_id = req['user'].id;
                 const service = await serviceProfileRepository.findById(account_id);
@@ -119,6 +121,7 @@ export default class ServiceProfileController {
                         ...data
                     }
                 }
+                
                 this.event.publish(ServiceProfileTopics.UPDATE, payload)
 
                 res.json({
@@ -132,7 +135,7 @@ export default class ServiceProfileController {
         }
     }
     deleteProfileById(serviceProfileRepository: IServiceProfileRepository) {
-        return async (res: Response, req: Request, next: NextFunction) => {
+        return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const service = await serviceProfileRepository.deleteById(req.params.service_profile_id);
                 res.json({
@@ -145,6 +148,43 @@ export default class ServiceProfileController {
                 this.event.publish(ServiceProfileTopics.DELETE, payload)
             } catch(err) {
                 next(err);
+            }
+        }
+    }
+    getAllServicesByServiceProfileId(serviceRepository: IServiceRepository) {
+        return async(req: Request, res: Response, next: NextFunction) => {
+            try{
+
+                const id = req.params.service_profile_id;
+
+                const service = await serviceRepository.findMany({
+                    service_profile_id: id
+                })
+
+                res.json({
+                    services: service.elements,
+                    amount: service.amount
+                });
+                
+            } catch(err) {
+                next(err)
+            }
+        }
+    }
+    getAllRatingToServiceProfile(ratingServiceProfileRepository: IRatingServiceProfileRepository){
+        return async(req: Request, res: Response, next: NextFunction) => {
+            try{
+                const { service_profile_id } = req.params;
+                const result = await ratingServiceProfileRepository.findMany({
+                    service_profile_id
+                });
+                    
+                res.json({
+                    amount: result.amount,
+                    ratings: result.elements
+                })
+            } catch(err) {
+                next(err)
             }
         }
     }

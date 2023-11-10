@@ -1,6 +1,7 @@
 export default interface IBaseRepository<T> {
     create(data: Partial<T>): Promise<IRepositoryCreateResponse<T>>;
     updateById(id: string | number, data: Partial<T>): Promise<IRepositoryUpdateByIdResponse<T>>;
+    updateOne(where: Partial<T>, data: Partial<T>): Promise<IRepositoryUpdateOneResponse<T>>;
     updateMany(where: Partial<T>, data: Partial<T>): Promise<IRepositoryUpdateManyResponse>;
     findById(id: string | number): Promise<Partial<T>>;
     findMany(where: Partial<T>, options?: IFindManyOptions<T>): Promise<IFindManyResponse<T>>;
@@ -31,6 +32,11 @@ export interface IRepositoryCreateResponse<T> {
 }
 
 export interface IRepositoryUpdateByIdResponse<T> {
+    element?: Partial<T>;
+    success: boolean;
+}
+
+export interface IRepositoryUpdateOneResponse<T> {
     element?: Partial<T>;
     success: boolean;
 }

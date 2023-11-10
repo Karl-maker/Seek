@@ -2,7 +2,7 @@ import { IAccount, IAccountRepository } from "..";
 import { IMongoDB } from "../../../helpers/database/mongo";
 import { Model, Schema } from 'mongoose';
 import PasswordUtils from "../../../utils/password";
-import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany } from "../../base-repository";
+import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany, IRepositoryUpdateOneResponse } from "../../base-repository";
 
 const accountSchema = new Schema<IAccount>({
     first_name: { type: String, required: true },
@@ -54,6 +54,9 @@ export class MongoAccountRepository implements IAccountRepository {
     constructor(db: IMongoDB) {
         this.database = db;     
         this.model = this.database.mongoose.model<IAccount>('Account', accountSchema);
+    }
+    updateOne(where: Partial<IAccount>, data: Partial<IAccount>): Promise<IRepositoryUpdateOneResponse<IAccount>> {
+        throw new Error("Method not implemented.");
     }
 
     async create(data: Partial<IAccount>): Promise<IRepositoryCreateResponse<IAccount>> {

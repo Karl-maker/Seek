@@ -1,7 +1,7 @@
 import { ILogin, ILoginRepository } from "..";
 import { IMongoDB } from "../../../helpers/database/mongo";
 import { Model, Schema } from 'mongoose';
-import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany } from "../../base-repository";
+import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany, IRepositoryUpdateOneResponse } from "../../base-repository";
 
 const loginSchema = new Schema<ILogin>({
     account_id: { type: String, required: true },
@@ -25,6 +25,9 @@ export class MongoLoginRepository implements ILoginRepository {
     constructor(db: IMongoDB) {
         this.database = db;     
         this.model = this.database.mongoose.model<ILogin>('Login', loginSchema);
+    }
+    updateOne(where: Partial<ILogin>, data: Partial<ILogin>): Promise<IRepositoryUpdateOneResponse<ILogin>> {
+        throw new Error("Method not implemented.");
     }
     async create(data: Partial<ILogin>): Promise<IRepositoryCreateResponse<ILogin>> {
         const loginDetails = await this.model.create({

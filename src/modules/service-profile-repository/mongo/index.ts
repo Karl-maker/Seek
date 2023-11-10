@@ -1,7 +1,7 @@
 import { IServiceProfile, IServiceProfileRepository } from "..";
 import { IMongoDB } from "../../../helpers/database/mongo";
 import { Model, Schema } from 'mongoose';
-import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany } from "../../base-repository";
+import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany, IRepositoryUpdateOneResponse } from "../../base-repository";
 
 const serviceProfileSchema = new Schema<IServiceProfile>({
     profession: { type: String, required: true },
@@ -9,7 +9,14 @@ const serviceProfileSchema = new Schema<IServiceProfile>({
     last_name: { type: String, required: true },
     picture: { type: String, required: false },
     verified: { type: Boolean, default: false },
-    account_id: { type: Number, required: true },
+    account_id: { type: String, required: false },
+    location: {
+        country: { type: String, required: true },
+        state: { type: String, required: false },
+        areas: [
+            { type: String }
+        ]
+    }
   }, {
     timestamps: { 
         updatedAt: 'updated_at', 
@@ -24,6 +31,9 @@ export class MongoServiceProfileRepository implements IServiceProfileRepository 
     constructor(db: IMongoDB) {
         this.database = db;     
         this.model = this.database.mongoose.model<IServiceProfile>('ServiceProfile', serviceProfileSchema);
+    }
+    updateOne(where: Partial<IServiceProfile>, data: Partial<IServiceProfile>): Promise<IRepositoryUpdateOneResponse<IServiceProfile>> {
+        throw new Error("Method not implemented.");
     }
     async create(data: Partial<IServiceProfile>): Promise<IRepositoryCreateResponse<IServiceProfile>> {
         const service = await this.model.create(data);

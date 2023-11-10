@@ -1,6 +1,6 @@
 import { IMongoDB } from "../../../helpers/database/mongo";
 import { Model, Schema } from 'mongoose';
-import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany } from "../../base-repository";
+import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany, IRepositoryUpdateOneResponse } from "../../base-repository";
 import { IAccountConfirmation, IAccountConfirmationRepository } from "..";
 
 const accountConfirmationSchema = new Schema<IAccountConfirmation>({
@@ -23,6 +23,9 @@ export class MongoAccountConfirmationRepository implements IAccountConfirmationR
     constructor(db: IMongoDB) {
         this.database = db;     
         this.model = this.database.mongoose.model<IAccountConfirmation>('AccountConfirmation', accountConfirmationSchema);
+    }
+    updateOne(where: Partial<IAccountConfirmation>, data: Partial<IAccountConfirmation>): Promise<IRepositoryUpdateOneResponse<IAccountConfirmation>> {
+        throw new Error("Method not implemented.");
     }
     async create(data: Partial<IAccountConfirmation>): Promise<IRepositoryCreateResponse<IAccountConfirmation>> {
         const confirmation = await this.model.create({

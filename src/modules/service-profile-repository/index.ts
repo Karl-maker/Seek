@@ -10,5 +10,10 @@ export interface IServiceProfile extends IBase {
     last_name: string;
     picture?: string;
     verified: boolean;
-    account_id: number;
+    account_id?: string; 
+    location?: {
+        country: string;
+        state?: string;
+        areas: string[];
+    }
 }
