@@ -33,8 +33,9 @@ export default class AccountController {
         return async (req: Request, res: Response, next: NextFunction) => {
 
             try {
+                const data = req.body;
                 const result = await accountAuthentication.signup({
-                    ...req.body
+                    ...data
                 });
         
                 if(result.success) {
@@ -65,7 +66,8 @@ export default class AccountController {
     logout(accountAuthentication: IAccountAuthentication){
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
-                const result = await accountAuthentication.logout(req['refresh_token']);
+                const refresh = req['refresh_token'];
+                const result = await accountAuthentication.logout(refresh);
 
                 if(!result.success) {
                     throw new HTTPError(`Issue Logging Out`, 500);
@@ -90,7 +92,8 @@ export default class AccountController {
     getAccessToken(accountAuthentication: IAccountAuthentication){
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
-                const result = await accountAuthentication.refresh(req['refresh_token']);
+                const refresh = req['refresh_token'];
+                const result = await accountAuthentication.refresh(refresh);
 
                 if(!result.access_token) {
                     throw new HTTPError(`Issue Getting Access Token`, 500);
@@ -161,7 +164,8 @@ export default class AccountController {
     getAccountById(accountRepository: IAccountRepository){
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
-                const result = await accountRepository.findById(req.params.account_id);
+                const id = req.params.account_id;
+                const result = await accountRepository.findById(id);
 
                 delete result.password;
 
@@ -182,9 +186,11 @@ export default class AccountController {
     updateAccountById(accountRepository: IAccountRepository){
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
-                const result = await accountRepository.updateById(req.params.account_id,
+                const data = req.body;
+                const id = req.params.account_id;
+                const result = await accountRepository.updateById(id,
                     {
-                        ...req.body.data
+                        ...data
                     }
                 );
 
@@ -205,9 +211,10 @@ export default class AccountController {
     createAccount(accountRepository: IAccountRepository){
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
+                const data = req.body;
                 const result = await accountRepository.create(
                     {
-                        ...req.body.data
+                        ...data
                     }
                 );
 
@@ -229,7 +236,8 @@ export default class AccountController {
     deleteAccountById(accountRepository: IAccountRepository){
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
-                const result = await accountRepository.deleteById(req.params.account_id);
+                const id = req.params.account_id;
+                const result = await accountRepository.deleteById(id);
 
                 if(!result.success) {
                     throw new HTTPError(`Issue Deleting`, 500);
@@ -255,7 +263,8 @@ export default class AccountController {
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
                 const reason = req.body.reason;
-                const result = await accountRepository.updateById(req['user'].id, {
+                const id = req['user'].id;
+                const result = await accountRepository.updateById(id, {
                     status: 'deactivated'
                 });
 
@@ -283,7 +292,8 @@ export default class AccountController {
     sendConfirmationCode(accountRepository: IAccountRepository, accountConfirmation: IAccountConfirmation) {
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
-                const account = await accountRepository.findById(req['user'].id);
+                const id = req['user'].id;
+                const account = await accountRepository.findById(id);
                 accountConfirmation.generate(account);
     
                 res.json({
@@ -298,7 +308,9 @@ export default class AccountController {
     checkConfirmationCode(accountConfirmation: IAccountConfirmation) {
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
-                const result = await accountConfirmation.check(req['user'].id, req.body.code);
+                const id = req['user'].id;
+                const code = req.body.code;
+                const result = await accountConfirmation.check(id, code);
                 let message = "Account Failed To Be Confirmed"
                 if(result.confirmed) {
                     message = "Account Confirmed"
@@ -338,9 +350,11 @@ export default class AccountController {
     resetPasswordWithToken(accountRepository: IAccountRepository, tokenManager: JWTService<IPasswordRecoveryToken>) {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
-                const payload = await tokenManager.verifyToken(String(req["query"].token || ""));
+                const password = req.body.password;
+                const token = req["query"].token;
+                const payload = await tokenManager.verifyToken(String(token || ""));
                 const result = await accountRepository.updateById(payload.sub, {
-                    password: await password.hash(req.body.password)
+                    password: await password.hash(password)
                 });
 
                 const eventPayload: IAccountResetPasswordPayload = {

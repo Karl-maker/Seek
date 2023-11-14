@@ -9,6 +9,9 @@ import MongoDB, { IMongoDB } from "./helpers/database/mongo";
 import { IBucketStorage } from "./helpers/bucket";
 import { FileSystemBucket } from "./helpers/bucket/file-system";
 import accountRoutes from "./routes/account";
+import serviceProfileRoutes from "./routes/service-profile";
+import serviceRoutes from "./routes/service";
+import ratingServiceProfileRoutes from "./routes/rating-service-profile";
 
 const mongo_db_uri = config.database[config.environment].uri;
 const server: NodeServer = new NodeServer(express());
@@ -31,6 +34,9 @@ const bucket: IBucketStorage = new FileSystemBucket('../storage');
     server.app.engine('.handlebars', engine({extname: 'handlebars'}));
     
     accountRoutes(server, database, event);
+    serviceProfileRoutes(server, database, event);
+    serviceRoutes(server, database, event);
+    ratingServiceProfileRoutes(server, database, event);
 
     server.start(config.port, () => {
         logger.info(`running on port ${config.port}`);

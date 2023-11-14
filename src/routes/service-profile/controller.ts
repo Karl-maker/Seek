@@ -7,6 +7,7 @@ import { IServiceProfileCreatePayload, IServiceProfileUpdateLocationPayload, ISe
 import { IBucketStorage } from '../../helpers/bucket';
 import { IServiceRepository } from '../../modules/service-repository';
 import { IRatingServiceProfileRepository } from '../../modules/rating-service-profile-repository';
+import IServiceProfileAvailabilityRepository from '../../modules/service-profile-availability-repository';
 
 export default class ServiceProfileController {
     event: IMessengerQueue;
@@ -30,7 +31,7 @@ export default class ServiceProfileController {
                 }
 
                 const service = await serviceProfileRepository.create({
-                    ...req.body,
+                    ...data,
                     first_name: account.first_name,
                     last_name: account.last_name,
                     account_id
@@ -102,15 +103,9 @@ export default class ServiceProfileController {
                 const account_id = req['user'].id;
                 const data = req.body;
 
-                const found = await serviceProfileRepository.findOne({
+                const service = await serviceProfileRepository.updateOne({
                     account_id
-                });
-
-                if(!found) {
-                    throw new HTTPError(`Service Profile Already Made`, 401);
-                }
-
-                const service = await serviceProfileRepository.updateById(found._id, {
+                }, {
                     ...data,
                 });
 
@@ -137,7 +132,8 @@ export default class ServiceProfileController {
     deleteProfileById(serviceProfileRepository: IServiceProfileRepository) {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
-                const service = await serviceProfileRepository.deleteById(req.params.service_profile_id);
+                const id = req.params.service_profile_id;
+                const service = await serviceProfileRepository.deleteById(id);
                 res.json({
                     message: 'Profile Deleted',
                 });
@@ -182,6 +178,23 @@ export default class ServiceProfileController {
                 res.json({
                     amount: result.amount,
                     ratings: result.elements
+                })
+            } catch(err) {
+                next(err)
+            }
+        }
+    }
+    getAllAvailability(serviceProfileAvailabilityRepository: IServiceProfileAvailabilityRepository) {
+        return async(req: Request, res: Response, next: NextFunction) => {
+            try{
+                const id = req.params.service_profile_id;
+                const availabilities = await serviceProfileAvailabilityRepository.findMany({
+                    service_profile_id: id
+                });
+
+                res.json({
+                    availabilities: availabilities.elements,
+                    count: availabilities.amount
                 })
             } catch(err) {
                 next(err)

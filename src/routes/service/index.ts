@@ -33,7 +33,7 @@ export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     const serviceRepository: IServiceRepository = new MongoServiceRepository(db);
 
     server.app.post(`${ROUTE}`, authenticate(localJWTAuthorization), serviceController.createService(serviceRepository, serviceProfileRepository));
-    server.app.patch(`${ROUTE}/:service_id`, authenticate(localJWTAuthorization), serviceController.updateService(serviceRepository, serviceProfileRepository));
-    server.app.get(`${ROUTE}/:services_id`, authenticate(localJWTAuthorization), serviceController.getServiceById(serviceRepository, serviceProfileRepository));
-    server.app.delete(`${ROUTE}/:services_id`, authenticate(localJWTAuthorization), serviceController.deleteServiceById(serviceRepository, serviceProfileRepository));
+    server.app.patch(`${ROUTE}/:service_id`, authenticate(localJWTAuthorization), serviceController.updateService(serviceRepository));
+    server.app.get(`${ROUTE}/:services_id`, authenticate(localJWTAuthorization), serviceController.getServiceById(serviceRepository));
+    server.app.delete(`${ROUTE}/:services_id`, authenticate(localJWTAuthorization), serviceController.deleteServiceById(serviceRepository));
 } 

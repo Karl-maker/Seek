@@ -40,25 +40,13 @@ export default class ServiceController {
             }
         }
     }
-    updateService(serviceRepository: IServiceRepository, serviceProfileRepository: IServiceProfileRepository) {
+    updateService(serviceRepository: IServiceRepository) {
         return async(req: Request, res: Response, next: NextFunction) => {
             try{
-                const account_id = req['user'].id;
                 const data = req.body;
                 const id = req.params.service_id;
 
-                const serviceProfile = await serviceProfileRepository.findOne({
-                    account_id
-                });
-
-                if(!serviceProfile) {
-                    throw new HTTPError(`Profile Not Found`, 404);
-                }
-
-                const service = await serviceRepository.updateOne({
-                    service_profile_id: serviceProfile._id,
-                    id
-                }, {
+                const service = await serviceRepository.updateById(id, {
                     ...data,
                 })
 
@@ -72,24 +60,12 @@ export default class ServiceController {
             }
         }
     }
-    getServiceById(serviceRepository: IServiceRepository, serviceProfileRepository: IServiceProfileRepository) {
+    getServiceById(serviceRepository: IServiceRepository) {
         return async(req: Request, res: Response, next: NextFunction) => {
             try{
-                const account_id = req['user'].id;
                 const id = req.params.service_id;
 
-                const serviceProfile = await serviceProfileRepository.findOne({
-                    account_id
-                });
-
-                if(!serviceProfile) {
-                    throw new HTTPError(`Profile Not Found`, 404);
-                }
-
-                const service = await serviceRepository.findOne({
-                    service_profile_id: serviceProfile._id,
-                    id
-                })
+                const service = await serviceRepository.findById(id)
 
                 res.json({
                     service_profile: service,
@@ -100,24 +76,12 @@ export default class ServiceController {
             }
         }
     }
-    deleteServiceById(serviceRepository: IServiceRepository, serviceProfileRepository: IServiceProfileRepository) {
+    deleteServiceById(serviceRepository: IServiceRepository) {
         return async(req: Request, res: Response, next: NextFunction) => {
             try{
-                const account_id = req['user'].id;
                 const id = req.params.service_id;
 
-                const serviceProfile = await serviceProfileRepository.findOne({
-                    account_id
-                });
-
-                if(!serviceProfile) {
-                    throw new HTTPError(`Profile Not Found`, 404);
-                }
-
-                const service = await serviceRepository.deleteMany({
-                    service_profile_id: serviceProfile._id,
-                    id
-                })
+                await serviceRepository.deleteById(id)
 
                 res.json({
                     message: 'Deleted Successfully'

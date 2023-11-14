@@ -10,6 +10,8 @@ import { IAccountRepository } from "../../modules/account-repository";
 import { MongoAccountRepository } from "../../modules/account-repository/mongo";
 import { IRatingServiceProfileRepository } from "../../modules/rating-service-profile-repository";
 import { MongoRatingServiceProfileRepository } from "../../modules/rating-service-profile-repository/mongo";
+import IServiceProfileAvailabilityRepository from "../../modules/service-profile-availability-repository";
+import { MongoServiceProfileAvailabilityRepository } from "../../modules/service-profile-availability-repository/mongo";
 import { IServiceProfileRepository } from "../../modules/service-profile-repository";
 import { MongoServiceProfileRepository } from "../../modules/service-profile-repository/mongo";
 import { IServiceRepository } from "../../modules/service-repository";
@@ -47,7 +49,8 @@ const upload = multer({ storage: storage })
 export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     const serviceProfileController = new ServiceProfileController(event);
     const accountRepository: IAccountRepository = new MongoAccountRepository(db);
-    const serviceProfileRepository: IServiceProfileRepository = new MongoServiceProfileRepository(db)
+    const serviceProfileRepository: IServiceProfileRepository = new MongoServiceProfileRepository(db);
+    const serviceProfileAvailabilityRepository: IServiceProfileAvailabilityRepository = new MongoServiceProfileAvailabilityRepository(db);
     const localJWTAuthorization: IAccountAuthorization = new LocalAccountAuthorization(accessTokenManager)
     const serviceRepository: IServiceRepository = new MongoServiceRepository(db);
     const ratingServiceProfileRepository: IRatingServiceProfileRepository = new MongoRatingServiceProfileRepository(db);
@@ -59,4 +62,5 @@ export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     server.app.delete(`${ROUTE}/display-picture`, authenticate(localJWTAuthorization), serviceProfileController.removeProfilePicture(bucketStorage, serviceProfileRepository));
     server.app.get(`${ROUTE}/:service_profile_id/services`, serviceProfileController.getAllServicesByServiceProfileId(serviceRepository));
     server.app.get(`${ROUTE}/:service_profile_id/ratings`, serviceProfileController.getAllRatingToServiceProfile(ratingServiceProfileRepository));
+    server.app.get(`${ROUTE}/:service_profile_id/availability`, serviceProfileController.getAllAvailability(serviceProfileAvailabilityRepository))
 }
