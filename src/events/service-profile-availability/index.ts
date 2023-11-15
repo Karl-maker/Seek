@@ -1,4 +1,4 @@
-import { IServiceProfileAvaliability } from "../../modules/service-profile-availability-repository";
+import { IServiceProfileAvailability } from "../../modules/service-profile-availability-repository";
 
 export const ServiceProfileAvailabilityTopics = {
     ADD: 'SERVICE_PROFILE_AVAILABILITY_CREATED',
@@ -7,10 +7,10 @@ export const ServiceProfileAvailabilityTopics = {
 
 export interface IServiceProfileAvailabilityAddPayload {
     service_profile_id: string;
-    availability: Partial<IServiceProfileAvaliability>;
+    availability: Partial<IServiceProfileAvailability>;
 }
 
 export interface IServiceProfileAvailabilityUpdatePayload {
     service_profile_id: string;
-    availability: Partial<IServiceProfileAvaliability>;
+    availability: Partial<IServiceProfileAvailability>;
 }

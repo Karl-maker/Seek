@@ -6,12 +6,12 @@ import { config } from "./config";
 import NodeEvent from "./helpers/event/node";
 import IMessengerQueue from "./helpers/event";
 import MongoDB, { IMongoDB } from "./helpers/database/mongo";
-import { IBucketStorage } from "./helpers/bucket";
-import { FileSystemBucket } from "./helpers/bucket/file-system";
 import accountRoutes from "./routes/account";
 import serviceProfileRoutes from "./routes/service-profile";
 import serviceRoutes from "./routes/service";
 import ratingServiceProfileRoutes from "./routes/rating-service-profile";
+import availabilityServiceProfileRoutes from "./routes/service-profile-availability";
+import locationRoutes from "./routes/location"
 
 const mongo_db_uri = config.database[config.environment].uri;
 const server: NodeServer = new NodeServer(express());
@@ -23,7 +23,6 @@ const database: IMongoDB = new MongoDB(mongo_db_uri, {
     retryWrites: true, 
     w: "majority" 
 });
-const bucket: IBucketStorage = new FileSystemBucket('../storage');
 
 (async () => {
     await database.connect();
@@ -37,6 +36,8 @@ const bucket: IBucketStorage = new FileSystemBucket('../storage');
     serviceProfileRoutes(server, database, event);
     serviceRoutes(server, database, event);
     ratingServiceProfileRoutes(server, database, event);
+    availabilityServiceProfileRoutes(server, database, event);
+    locationRoutes(server, database, event);
 
     server.start(config.port, () => {
         logger.info(`running on port ${config.port}`);

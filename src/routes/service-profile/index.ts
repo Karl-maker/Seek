@@ -60,6 +60,7 @@ export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     server.app.delete(`${ROUTE}`, authenticate(localJWTAuthorization), serviceProfileController.deleteProfileById(serviceProfileRepository));
     server.app.post(`${ROUTE}/display-picture`, authenticate(localJWTAuthorization), upload.single('profile-picture'), serviceProfileController.uploadProfilePicture(bucketStorage, serviceProfileRepository));
     server.app.delete(`${ROUTE}/display-picture`, authenticate(localJWTAuthorization), serviceProfileController.removeProfilePicture(bucketStorage, serviceProfileRepository));
+    server.app.get(`${ROUTE}/location-search`, serviceProfileController.getAllServiceProfilesByLocation(serviceProfileRepository));
     server.app.get(`${ROUTE}/:service_profile_id/services`, serviceProfileController.getAllServicesByServiceProfileId(serviceRepository));
     server.app.get(`${ROUTE}/:service_profile_id/ratings`, serviceProfileController.getAllRatingToServiceProfile(ratingServiceProfileRepository));
     server.app.get(`${ROUTE}/:service_profile_id/availability`, serviceProfileController.getAllAvailability(serviceProfileAvailabilityRepository))

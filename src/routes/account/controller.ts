@@ -4,13 +4,11 @@ import HTTPError from '../../utils/error';
 import IMessengerQueue from '../../helpers/event';
 import { AccountTopics, IAccountDeactivatePayload, IAccountDeletedPayload, IAccountLoginPayload, IAccountLogoutPayload, IAccountResetPasswordPayload, IAccountSignupPayload } from '../../events/account';
 import { IAccountRepository } from '../../modules/account-repository';
-import { getAccessTokenFromHeader } from '../../utils/bearer-token';
 import IRetrieveRefreshToken from '../../services/retrieve-refresh-token';
 import IAccountConfirmation from '../../services/account-confirmation';
 import IAccountPasswordRecovery from '../../services/account-recovery';
 import { IPasswordRecoveryToken } from '../../services/account-recovery/token';
 import JWTService from '../../helpers/token/jwt';
-import password from '../../utils/password';
 
 export default class AccountController {
     event: IMessengerQueue;
@@ -371,4 +369,13 @@ export default class AccountController {
             }
         }
     }
+
+    sendConfirmationCodeEvent(accountConfirmation: IAccountConfirmation) {
+        return async (payload: IAccountSignupPayload) => {
+            const account = payload.account;
+            accountConfirmation.generate(account);
+        }
+    }
+
+    
 }

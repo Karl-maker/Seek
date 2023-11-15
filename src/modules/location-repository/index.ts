@@ -1,6 +1,6 @@
 import IBaseRepository, { IBase } from "../base-repository";
 
-export default interface ILocationsRepository extends IBaseRepository<ILocation> {
+export default interface ILocationRepository extends IBaseRepository<ILocation> {
 
 }
 

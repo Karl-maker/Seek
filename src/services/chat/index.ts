@@ -1,7 +1,11 @@
 import IChatRoomRepository from "../../modules/chat-room-repository";
-import IMessageRepository from "../../modules/message-repository";
+import IMessageRepository, { IMessage } from "../../modules/message-repository";
+
+// stateful
 
 export default interface IChat {
+    connect(chat_room_id: string): Promise<void>;
+    disconnect(chat_room_id: string): Promise<void>;
     send(
         message: ISentMessage, 
         messageRepository: IMessageRepository, 
@@ -12,26 +16,17 @@ export default interface IChat {
             }, 
             error?: Error
         ) => void
-    ): Promise<ISendMessageResult>;
+    ): void;
     retrieve(chat_room_id: string, messageRepository: IMessageRepository, chatRoomRepository: IChatRoomRepository): Promise<IGetChatRoomMessages>;
     listen(chat_room_id: string, callback: (message: ISentMessage) => void): Promise<void>;
 }
 
-export interface ISendMessageResult {
-    
-}
-
 export interface IGetChatRoomMessages {
-
+    messages: IMessage[];
 }
 
 export interface ISentMessage {
-    message: string;
-    chat_room_id: string;
-    from: {
-        account_id: string;
-        service_profile_id?: string;
-    };
+    message: IMessage;
 }
 
 /**

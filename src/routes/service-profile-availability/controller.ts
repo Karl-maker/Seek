@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import IMessengerQueue from '../../helpers/event';
 import IServiceProfileAvailabilityRepository from '../../modules/service-profile-availability-repository';
 import HTTPError from '../../utils/error';
+import { IServiceProfileAvailabilityAddPayload, ServiceProfileAvailabilityTopics } from '../../events/service-profile-availability';
 
 export default class ServiceProfileController {
     event: IMessengerQueue;
@@ -16,6 +17,14 @@ export default class ServiceProfileController {
                 const account_id = req['user'].id;
                 data['account_id'] = account_id;
                 const availability = await serviceProfileAvailabilityRepository.create(data);
+
+                const payload: IServiceProfileAvailabilityAddPayload = {
+                    service_profile_id: availability.element.service_profile_id,
+                    availability: availability.element
+                }
+                
+                this.event.publish(ServiceProfileAvailabilityTopics.ADD, payload);
+
                 res.json({
                     message: "Availability Slot Created",
                     availability

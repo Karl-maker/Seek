@@ -1,7 +1,7 @@
 import { IMongoDB } from "../../../helpers/database/mongo";
 import { Model, Schema } from 'mongoose';
 import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany, IRepositoryUpdateOneResponse } from "../../base-repository";
-import ILocationsRepository, { ILocation } from "..";
+import ILocationRepository, { ILocation } from "..";
 
 const locationSchema = new Schema<ILocation>({
     area: { type: String, required: true },
@@ -16,7 +16,7 @@ const locationSchema = new Schema<ILocation>({
 }
 );
 
-export class MongoLocationRepository implements ILocationsRepository{
+export class MongoLocationRepository implements ILocationRepository{
     database: IMongoDB;
     model: Model<ILocation>;
 

@@ -1,7 +1,11 @@
-import IBaseRepository, { IBase } from "../base-repository";
+import IBaseRepository, { IBase, IFindManyOptions, IFindManyResponse } from "../base-repository";
 
 export interface IServiceProfileRepository extends IBaseRepository<IServiceProfile> {
-
+    findManyByArea(location: { 
+        country: string, 
+        area: string,
+        state?: string,
+    }, options?: IFindManyOptions<IServiceProfile>): Promise<IFindManyResponse<IServiceProfile>>
 } 
 
 export interface IServiceProfile extends IBase {

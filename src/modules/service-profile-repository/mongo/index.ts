@@ -32,8 +32,49 @@ export class MongoServiceProfileRepository implements IServiceProfileRepository 
         this.database = db;     
         this.model = this.database.mongoose.model<IServiceProfile>('ServiceProfile', serviceProfileSchema);
     }
-    updateOne(where: Partial<IServiceProfile>, data: Partial<IServiceProfile>): Promise<IRepositoryUpdateOneResponse<IServiceProfile>> {
-        throw new Error("Method not implemented.");
+    async findManyByArea(location: { country: string; area: string; state?: string; }, options?: IFindManyOptions<IServiceProfile>): Promise<IFindManyResponse<IServiceProfile>> {
+        const query = this.model.find({
+            'location.areas': location.area,
+            'location.country': location.country
+        });
+
+        if (options) {
+            if (options.sort) {
+                const { field, direction } = options.sort;
+                if (field) {
+                    // Ensure 'field' is a valid key of type IAccount
+                    if (Object.keys(serviceProfileSchema.paths).includes(field as string)) {
+                        query.sort({ [field]: direction });
+                    }
+                }
+            }
+
+            if (options.page) {
+                const { size, number } = options.page;
+                if (size && number) {
+                    query.skip((number - 1) * size).limit(size);
+                }
+            }
+        }
+
+        const elements = await query.lean();
+        const total = await this.model.countDocuments({
+            'location.areas': location.area,
+            'location.country': location.country
+        });
+
+        return { elements, amount: total };
+    }
+    async updateOne(where: Partial<IServiceProfile>, data: Partial<IServiceProfile>): Promise<IRepositoryUpdateOneResponse<IServiceProfile>> {
+        const updated = await this.model.updateOne({
+            ...where
+        }, {
+            ...data
+        });
+
+        return {
+            success: true,
+        }
     }
     async create(data: Partial<IServiceProfile>): Promise<IRepositoryCreateResponse<IServiceProfile>> {
         const service = await this.model.create(data);

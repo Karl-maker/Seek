@@ -52,10 +52,7 @@ export interface IFindManyResponse<T> {
     amount: number;
 }
 
-export enum SortDirection {
-    ASC = 'asc',
-    DESC = 'desc',
-}
+export type SortDirection = 'asc' | 'desc';
   
 export interface IFindManyOptions<T> {
     sort?: {

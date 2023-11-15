@@ -5,6 +5,7 @@ import IMessageRepository, { IMessage } from "..";
 
 const messageSchema = new Schema<IMessage>({
     from: { type: String, required: true },
+    text: { type: String, required: true },
     chat_room_id: { type: String, required: true }
 },
 {

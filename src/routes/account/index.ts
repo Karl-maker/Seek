@@ -1,4 +1,5 @@
 import { config } from "../../config";
+import { AccountTopics } from "../../events/account";
 import { IMongoDB } from "../../helpers/database/mongo";
 import IEmail from "../../helpers/email";
 import NodeMailer from "../../helpers/email/nodemailer";
@@ -94,4 +95,6 @@ export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     server.app.delete(`${ROUTE}/:account_id`, authenticate(localJWTAuthorization, 'admin'), accountController.deleteAccountById(accountRepository));
     server.app.post(`${ROUTE}/reset-password`, accountController.resetPasswordWithToken(accountRepository, passwordRecoveryManager));
     server.app.post(`${ROUTE}/password-recovery`, accountController.recoverPassword(passwordRecovery));
+
+    event.subscribe(AccountTopics.SIGNUP, accountController.sendConfirmationCodeEvent(accountConfirmation));
 }

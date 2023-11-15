@@ -9,10 +9,6 @@ export enum templates {
     PasswordRecovery = "password-recovery"
 }
 
-export interface IPasswordRecoveryContext extends IInformationContext {
-    url: string
-}
-
 export interface IEmailInput {
     subject: string;
     to: string;
@@ -32,4 +28,8 @@ export interface IConfirmationCodeContext extends IInformationContext {
 
 export interface IConfirmationLinkContext extends IInformationContext {
     url: string;
+}
+
+export interface IPasswordRecoveryContext extends IInformationContext {
+    url: string
 }

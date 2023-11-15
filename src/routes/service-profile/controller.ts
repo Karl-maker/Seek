@@ -54,6 +54,45 @@ export default class ServiceProfileController {
             }
         }
     }
+    getAllServiceProfilesByLocation(serviceProfileRepository: IServiceProfileRepository) {
+        return async(req: Request, res: Response, next: NextFunction) => {
+            try{
+
+                const {
+                    country,
+                    area, 
+                    page_size,
+                    page_number,
+                    sort_order = 'asc'
+                } = req.query;
+
+                const serviceProfiles = await serviceProfileRepository.findManyByArea({
+                    country: String(country),
+                    area: String(area)
+                },
+                {
+                    page: {
+                        size: Number(page_size),
+                        number: Number(page_number)
+                    },
+                    sort: {
+                        field: 'last_name', // Replace with the field you want to sort by
+                        direction: sort_order === 'asc' ? 'asc' : 'desc'
+                    }
+                }
+                );
+
+
+                res.json({
+                    service_profiles: serviceProfiles.elements,
+                    count: serviceProfiles.amount
+                });
+                
+            } catch(err) {
+                next(err)
+            }
+        }
+    }    
     uploadProfilePicture(storage: IBucketStorage, serviceProfileRepository: IServiceProfileRepository) {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
