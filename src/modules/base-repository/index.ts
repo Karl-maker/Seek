@@ -11,7 +11,6 @@ export default interface IBaseRepository<T> {
 }
 
 export interface IBase {
-    _id: string;
     id: string | number;
     version: number;
     created_at: Date;

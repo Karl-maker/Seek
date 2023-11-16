@@ -19,10 +19,14 @@ export default class MongoDB implements IMongoDB {
     this.options = options;
   }
 
-  async connect(): Promise<void> {
+  async connect(callback?: () => Promise<void>): Promise<void> {
     this.connection = mongoose.connection;
     this.mongoose = mongoose;
-    await mongoose.connect(this.uri, this.options);
+    await mongoose.connect(
+      this.uri, 
+      this.options
+    );
+    if(callback) await callback();
   }
 
   async disconnect(): Promise<void> {

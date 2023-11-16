@@ -36,7 +36,7 @@ export default class AccountPasswordRecoveryWithToken implements IAccountPasswor
         });
 
         const token = await this.resetPasswordToken.createToken({
-            sub: account._id
+            sub: account.id
         });
 
         const url = `${CONFIG.client.url}/recover-password?token=${token}`;

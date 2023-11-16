@@ -27,7 +27,7 @@ export default class ServiceController {
 
                 const service = await serviceRepository.create({
                     ...data,
-                    service_profile_id: serviceProfile._id
+                    service_profile_id: serviceProfile.id
                 })
 
                 res.json({

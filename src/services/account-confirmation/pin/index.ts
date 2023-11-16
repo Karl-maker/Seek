@@ -7,6 +7,7 @@ import CommunicationViaSMS, { ISMSInput } from "../../communication/sms";
 import CommunicationViaEmail from "../../communication/email";
 import ISMS from "../../../helpers/sms";
 import HTTPError from "../../../utils/error";
+import { logger } from "../../../helpers/logger/basic-logging";
 
 export default class AccountConfirmationWithPin implements IAccountConfirmation {
     sms: ISMS;
@@ -30,10 +31,10 @@ export default class AccountConfirmationWithPin implements IAccountConfirmation 
 
         const code = generateRandomPin();
         await this.accountConfirmationRepository.deleteMany({
-            account_id: account._id
+            account_id: String(account.id)
         });
         await this.accountConfirmationRepository.create({
-            account_id: account._id,
+            account_id: String(account.id),
             code,
         });
 
@@ -45,7 +46,7 @@ export default class AccountConfirmationWithPin implements IAccountConfirmation 
                 context: {
                     code,
                     name: account.first_name,
-                    message: 'Here is your confirmation code',
+                    message: 'Thank you for choosing our service. To complete your registration, please use the confirmation code below:',
                     header: 'Confirmation Code'
                 }
             }

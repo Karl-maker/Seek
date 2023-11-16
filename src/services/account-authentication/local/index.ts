@@ -36,20 +36,20 @@ export default class LocalAccountAuthentication implements IAccountAuthenticatio
 
         const loginDetail = await this.loginRepository.create({
             method: 'jwt',
-            account_id: account._id
+            account_id: account.id
         });
 
         // generate tokens
 
         const access_token = this.accessTokenManager.createToken({
-            sub: account._id,
+            sub: account.id,
             role: account.role
         });
 
         const refresh_token = this.refreshTokenManager.createToken({
-            sub: account._id,
+            sub: account.id,
             session: {
-                id: loginDetail.element._id
+                id: loginDetail.element.id
             }
         });
 

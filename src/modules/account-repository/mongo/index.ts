@@ -24,10 +24,11 @@ const accountSchema = new Schema<IAccount>({
     },
     mobile: { 
         type: String, 
-        required: false, 
-        unique: true,
+        required: false,
         validate: {
             validator: async function (value: string) {
+
+                if(!value) return true;
 
                 const existingAccount = await this.constructor.findOne({
                     mobile: value

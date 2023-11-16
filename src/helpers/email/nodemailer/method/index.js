@@ -3,12 +3,10 @@ const { config } = require("../../../../config");
 const path = require('path');
 const handlebars = require('nodemailer-express-handlebars');
 
-const EMAIL = config.nodemailer;
-
 module.exports = async function (
   to,
   subject,
-  template = 'Information',
+  template,
   context
 ){
   try {
@@ -19,7 +17,7 @@ module.exports = async function (
       secureConnection: this.secure,
       auth: {
         user: this.auth.user,
-        pass: this.auth.password,
+        pass: this.auth.pass,
       },
       tls: {
         ciphers: 'SSLv3'
@@ -28,9 +26,9 @@ module.exports = async function (
 
     transporter.use('compile', handlebars({
       viewEngine: {
-        layoutsDir: path.resolve(__dirname, '../../../../../templates/email'),
+        layoutsDir: path.resolve(__dirname, '../../../../../templates/email/layouts'),
         partialsDir: path.resolve(__dirname, '../../../../../templates/email/partials'),
-        defaultLayout: 'information',
+        defaultLayout: 'main',
       },
       viewPath: path.resolve(__dirname, '../../../../../templates/email'),
     }));
@@ -39,7 +37,7 @@ module.exports = async function (
       from: this.auth.user,
       to,
       subject,
-      template: checkTemplate(template),
+      template: template,
       context: {
         year: new Date().getFullYear(),
         ...context

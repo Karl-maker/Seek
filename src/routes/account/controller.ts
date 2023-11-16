@@ -9,6 +9,7 @@ import IAccountConfirmation from '../../services/account-confirmation';
 import IAccountPasswordRecovery from '../../services/account-recovery';
 import { IPasswordRecoveryToken } from '../../services/account-recovery/token';
 import JWTService from '../../helpers/token/jwt';
+import { logger } from '../../helpers/logger/basic-logging';
 
 export default class AccountController {
     event: IMessengerQueue;
@@ -33,7 +34,9 @@ export default class AccountController {
             try {
                 const data = req.body;
                 const result = await accountAuthentication.signup({
-                    ...data
+                    ...data,
+                    role: 'user',
+                    status: 'active'
                 });
         
                 if(result.success) {
@@ -51,9 +54,10 @@ export default class AccountController {
                     res.json({
                         message: 'Account Registration Successful'
                     })
-                } 
-        
-                next(new HTTPError(`Issue Signing Up, Try Again Later`, 500));
+                } else {
+                    next(new HTTPError(`Issue Signing Up, Try Again Later`, 500));
+                }
+    
             } catch (err) {
                 next(err);
             }
@@ -220,6 +224,15 @@ export default class AccountController {
                     throw new HTTPError(`Issue Updating`, 500);
                 }
 
+                const payload: IAccountSignupPayload = {
+                    account: result.element
+                }
+
+                this.event.publish(
+                   AccountTopics.SIGNUP,
+                   payload
+                );
+
                 res.json({
                     message: `Created Successfully`,
                     account: result.element
@@ -291,6 +304,8 @@ export default class AccountController {
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
                 const id = req['user'].id;
+
+                logger.debug('account:', req['user'])
                 const account = await accountRepository.findById(id);
                 accountConfirmation.generate(account);
     

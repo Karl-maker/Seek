@@ -1,4 +1,5 @@
-import IEmail, { IConfirmationCodeContext, IConfirmationLinkContext, IEmailInput, IInformationContext, templates } from "..";
+import IEmail, { IEmailInput, templates } from "..";
+import { logger } from "../../logger/basic-logging";
 import sendEmail from "./method";
 
 export interface INodeMailerConfig {
@@ -22,12 +23,12 @@ export default class NodeMailer implements IEmail {
     }
 
     async send(input: IEmailInput) {
-
+        logger.debug(`Enter send() method`)
         function enumToString(enumValue: any): string {
             const enumKey = Object.keys(templates).find(
                 (key) => templates[key] === enumValue
             );
-            return enumKey || 'information'; // Return 'Unknown' if not found.
+            return enumKey; // Return 'Unknown' if not found.
         }
 
         const {
@@ -39,12 +40,10 @@ export default class NodeMailer implements IEmail {
 
         await sendEmail.call(
             this.config, 
-            [
-                to,
-                subject,
-                enumToString(template),
-                context,    
-            ]
+            to,
+            subject,
+            templates[enumToString(template)],
+            context
         );
     }
 

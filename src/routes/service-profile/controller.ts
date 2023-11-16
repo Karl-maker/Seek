@@ -101,7 +101,7 @@ export default class ServiceProfileController {
 
                 storage.save(req['file'].filename, async (url: string, error?: Error) => {
                     if(error) throw new HTTPError(error.message, 500);
-                    await serviceProfileRepository.updateById(service._id, {
+                    await serviceProfileRepository.updateById(service.id, {
                         picture: url
                     });
                     const payload: IServiceProfileUploadedPicturePayload = {
@@ -125,7 +125,7 @@ export default class ServiceProfileController {
                     if(error) throw new HTTPError(error.message, 500);
                     if(!success) throw new HTTPError('Issue removing', 500);
 
-                    await serviceProfileRepository.updateById(service._id, {
+                    await serviceProfileRepository.updateById(service.id, {
                         picture: ""
                     });
 
@@ -150,8 +150,8 @@ export default class ServiceProfileController {
 
                 const payload: IServiceProfileUpdatePayload = {
                     service_profile: {
-                        _id: service.element._id,
-                        id: service.element._id,
+                        _id: service.element.id,
+                        id: service.element.id,
                         ...data
                     }
                 }

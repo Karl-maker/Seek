@@ -1,4 +1,4 @@
 export default interface IDatabase {
-    connect(): Promise<void>;
+    connect(callback?: () => Promise<void>): Promise<void>;
     disconnect(): Promise<void>;
 }

@@ -12,6 +12,7 @@ import { authenticate } from "../../middlewares/authorize";
 import { IAccountConfirmationRepository } from "../../modules/account-confirmation-repository";
 import { MongoAccountConfirmationRepository } from "../../modules/account-confirmation-repository/mongo";
 import { IAccountRepository } from "../../modules/account-repository";
+import { MockAccountRepository } from "../../modules/account-repository/mock";
 import { MongoAccountRepository } from "../../modules/account-repository/mongo";
 import { ILoginRepository } from "../../modules/login-repository";
 import { MongoLoginRepository } from "../../modules/login-repository/mongo";
@@ -73,7 +74,7 @@ const retrieveRefreshToken: IRetrieveRefreshToken = new RetrieveRefreshTokenFrom
 
 export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     const accountController = new AccountController(event);
-    const accountRepository: IAccountRepository = new MongoAccountRepository(db);
+    const accountRepository: IAccountRepository = new MockAccountRepository();
     const accountConfirmationRepository: IAccountConfirmationRepository = new MongoAccountConfirmationRepository(db);
     const loginRepository: ILoginRepository = new MongoLoginRepository(db);
     const localJWTAuthentication: IAccountAuthentication = new LocalAccountAuthentication(accountRepository, loginRepository, accessTokenManager, refreshTokenManager);
@@ -83,10 +84,10 @@ export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
 
     server.app.post(`${ROUTE}/signup`, accountController.signup(localJWTAuthentication));
     server.app.post(`${ROUTE}/login`, accountController.login(localJWTAuthentication)); 
-    server.app.post(`${ROUTE}/logout`, cookieParser(), accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.logout(localJWTAuthentication));
-    server.app.post(`${ROUTE}/refresh`, cookieParser(),accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.getAccessToken(localJWTAuthentication));
+    // server.app.post(`${ROUTE}/logout`, cookieParser(), accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.logout(localJWTAuthentication));
+    // server.app.post(`${ROUTE}/refresh`, cookieParser(),accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.getAccessToken(localJWTAuthentication));
     server.app.get(`${ROUTE}`, authenticate(localJWTAuthorization), accountController.current(accountRepository));
-    server.app.get(`${ROUTE}/:account_id`, authenticate(localJWTAuthorization), accountController.getAccountById(accountRepository));
+    server.app.get(`${ROUTE}/:account_id`, accountController.getAccountById(accountRepository));
     server.app.delete(`${ROUTE}/deactivate`, authenticate(localJWTAuthorization), accountController.deactivateAccountById(accountRepository));
     server.app.patch(`${ROUTE}/:account_id`, authenticate(localJWTAuthorization, 'admin'), accountController.updateAccountById(accountRepository));
     server.app.post(`${ROUTE}`, authenticate(localJWTAuthorization, 'admin'), accountController.createAccount(accountRepository));
