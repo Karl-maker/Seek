@@ -1,15 +1,15 @@
-import { config } from "../../config";
-import { IMongoDB } from "../../helpers/database/mongo";
-import IMessengerQueue from "../../helpers/event";
-import IServer from "../../helpers/server";
-import JWTService from "../../helpers/token/jwt";
-import { authenticate } from "../../middlewares/authorize";
-import { IServiceProfileRepository } from "../../modules/service-profile-repository";
-import { MongoServiceProfileRepository } from "../../modules/service-profile-repository/mongo";
-import { IServiceRepository } from "../../modules/service-repository";
-import { MongoServiceRepository } from "../../modules/service-repository/mongo";
-import IAccountAuthorization, { IAuthorizePayload } from "../../services/account-authorization";
-import LocalAccountAuthorization from "../../services/account-authorization/local";
+import { config } from "../../../config";
+import { IMongoDB } from "../../../helpers/database/mongo";
+import IMessengerQueue from "../../../helpers/event";
+import IServer from "../../../helpers/server";
+import JWTService from "../../../helpers/token/jwt";
+import { authenticate } from "../../../middlewares/authorize";
+import { IServiceProfileRepository } from "../../../modules/service-profile-repository";
+import { MongoServiceProfileRepository } from "../../../modules/service-profile-repository/mongo";
+import { IServiceRepository } from "../../../modules/service-repository";
+import { MongoServiceRepository } from "../../../modules/service-repository/mongo";
+import IAccountAuthorization, { IAuthorizePayload } from "../../../services/account-authorization";
+import LocalAccountAuthorization from "../../../services/account-authorization/local";
 import ServiceController from "./controller";
 
 const ROUTE = '/service';

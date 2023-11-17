@@ -1,17 +1,17 @@
 import { NextFunction, Response, Request } from 'express';
-import IAccountAuthentication from '../../services/account-authentication';
-import HTTPError from '../../utils/error';
-import IMessengerQueue from '../../helpers/event';
-import { AccountTopics, IAccountDeactivatePayload, IAccountDeletedPayload, IAccountLoginPayload, IAccountLogoutPayload, IAccountResetPasswordPayload, IAccountSignupPayload } from '../../events/account';
-import { IAccountRepository } from '../../modules/account-repository';
-import IRetrieveRefreshToken from '../../services/retrieve-refresh-token';
-import IAccountConfirmation from '../../services/account-confirmation';
-import IAccountPasswordRecovery from '../../services/account-recovery';
-import { IPasswordRecoveryToken } from '../../services/account-recovery/token';
-import JWTService from '../../helpers/token/jwt';
-import { ILoginRepository } from '../../modules/login-repository';
-import IIpLookup, { IGetLocationIpLookUp } from '../../services/ip-lookup';
-import { logger } from '../../helpers/logger/basic-logging';
+import IAccountAuthentication from '../../../services/account-authentication';
+import HTTPError from '../../../utils/error';
+import IMessengerQueue from '../../../helpers/event';
+import { AccountTopics, IAccountDeactivatePayload, IAccountDeletedPayload, IAccountLoginPayload, IAccountLogoutPayload, IAccountResetPasswordPayload, IAccountSignupPayload } from '../../../events/account';
+import { IAccountRepository } from '../../../modules/account-repository';
+import IRetrieveRefreshToken from '../../../services/retrieve-refresh-token';
+import IAccountConfirmation from '../../../services/account-confirmation';
+import IAccountPasswordRecovery from '../../../services/account-recovery';
+import { IPasswordRecoveryToken } from '../../../services/account-recovery/token';
+import JWTService from '../../../helpers/token/jwt';
+import { ILoginRepository } from '../../../modules/login-repository';
+import IIpLookup, { IGetLocationIpLookUp } from '../../../services/ip-lookup';
+import { logger } from '../../../helpers/logger/basic-logging';
 
 export default class AccountController {
     event: IMessengerQueue;

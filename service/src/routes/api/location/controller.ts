@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import IMessengerQueue from '../../helpers/event';
-import ILocationRepository from '../../modules/location-repository';
-import HTTPError from '../../utils/error';
+import IMessengerQueue from '../../../helpers/event';
+import ILocationRepository from '../../../modules/location-repository';
+import HTTPError from '../../../utils/error';
 
 export default class LocationController {
     event: IMessengerQueue;

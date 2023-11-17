@@ -1,13 +1,13 @@
-import { config } from "../../config";
-import { IMongoDB } from "../../helpers/database/mongo";
-import IMessengerQueue from "../../helpers/event";
-import IServer from "../../helpers/server";
-import JWTService from "../../helpers/token/jwt";
-import { authenticate } from "../../middlewares/authorize";
-import ILocationsRepository from "../../modules/location-repository";
-import { MongoLocationRepository } from "../../modules/location-repository/mongo";
-import IAccountAuthorization, { IAuthorizePayload } from "../../services/account-authorization";
-import LocalAccountAuthorization from "../../services/account-authorization/local";
+import { config } from "../../../config";
+import { IMongoDB } from "../../../helpers/database/mongo";
+import IMessengerQueue from "../../../helpers/event";
+import IServer from "../../../helpers/server";
+import JWTService from "../../../helpers/token/jwt";
+import { authenticate } from "../../../middlewares/authorize";
+import ILocationsRepository from "../../../modules/location-repository";
+import { MongoLocationRepository } from "../../../modules/location-repository/mongo";
+import IAccountAuthorization, { IAuthorizePayload } from "../../../services/account-authorization";
+import LocalAccountAuthorization from "../../../services/account-authorization/local";
 import LocationController from "./controller";
 
 const ROUTE = '/location';

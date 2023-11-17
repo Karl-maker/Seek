@@ -18,7 +18,7 @@ export default function errorHandler(server: IServer, event: IMessengerQueue){
             break;
             default:
             // Handle other types of errors
-            logger.error('Unexpected', err); // Log the error for debugging purposes
+            logger.error('Unexpected Issue', err); // Log the error for debugging purposes
             res.status(500).json({
                 error: {
                 message: 'Internal Server Error',

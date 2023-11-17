@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
-import IMessengerQueue from '../../helpers/event';
-import { IAccountRepository } from '../../modules/account-repository';
-import { IServiceProfileRepository } from '../../modules/service-profile-repository';
-import HTTPError from '../../utils/error';
-import { IServiceProfileCreatePayload, IServiceProfileUpdateLocationPayload, IServiceProfileUpdatePayload, IServiceProfileUploadedPicturePayload, ServiceProfileTopics } from '../../events/service-profile';
-import { IBucketStorage } from '../../helpers/bucket';
-import { IServiceRepository } from '../../modules/service-repository';
-import { IRatingServiceProfileRepository } from '../../modules/rating-service-profile-repository';
-import IServiceProfileAvailabilityRepository from '../../modules/service-profile-availability-repository';
+import IMessengerQueue from '../../../helpers/event';
+import { IAccountRepository } from '../../../modules/account-repository';
+import { IServiceProfileRepository } from '../../../modules/service-profile-repository';
+import HTTPError from '../../../utils/error';
+import { IServiceProfileCreatePayload, IServiceProfileUpdateLocationPayload, IServiceProfileUpdatePayload, IServiceProfileUploadedPicturePayload, ServiceProfileTopics } from '../../../events/service-profile';
+import { IBucketStorage } from '../../../helpers/bucket';
+import { IServiceRepository } from '../../../modules/service-repository';
+import { IRatingServiceProfileRepository } from '../../../modules/rating-service-profile-repository';
+import IServiceProfileAvailabilityRepository from '../../../modules/service-profile-availability-repository';
 
 export default class ServiceProfileController {
     event: IMessengerQueue;

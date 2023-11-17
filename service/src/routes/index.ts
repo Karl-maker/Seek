@@ -1,10 +1,11 @@
 // routes/apiV1.js
-import accountRoutes from './account';
-import serviceProfileRoutes from './service-profile';
-import serviceRoutes from './service';
-import ratingServiceProfileRoutes from './rating-service-profile';
-import availabilityServiceProfileRoutes from './service-profile-availability';
-import locationRoutes from './location';
+import homeRoutes from "./web/home"
+import accountRoutes from './api/account';
+import serviceProfileRoutes from './api/service-profile';
+import serviceRoutes from './api/service';
+import ratingServiceProfileRoutes from './api/rating-service-profile';
+import availabilityServiceProfileRoutes from './api/service-profile-availability';
+import locationRoutes from './api/location';
 import IServer from '../helpers/server';
 import { IMongoDB } from '../helpers/database/mongo';
 import IMessengerQueue from '../helpers/event';
@@ -16,5 +17,10 @@ export const apiV1Router = (server: IServer, database: IMongoDB, event: IMesseng
     ratingServiceProfileRoutes(server, database, event);
     availabilityServiceProfileRoutes(server, database, event);
     locationRoutes(server, database, event);
+    return server.router;
+}
+
+export const webViewRouter = (server: IServer, database: IMongoDB, event: IMessengerQueue) => {
+    homeRoutes(server, database, event);
     return server.router;
 }

@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import IMessengerQueue from '../../helpers/event';
-import { IServiceProfileRepository } from '../../modules/service-profile-repository';
-import HTTPError from '../../utils/error';
-import { IBucketStorage } from '../../helpers/bucket';
-import { IServiceRepository } from '../../modules/service-repository';
+import IMessengerQueue from '../../../helpers/event';
+import { IServiceProfileRepository } from '../../../modules/service-profile-repository';
+import HTTPError from '../../../utils/error';
+import { IServiceRepository } from '../../../modules/service-repository';
 
 export default class ServiceController {
     event: IMessengerQueue;

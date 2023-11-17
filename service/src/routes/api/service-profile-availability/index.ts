@@ -1,13 +1,13 @@
-import { config } from "../../config";
-import { IMongoDB } from "../../helpers/database/mongo";
-import IMessengerQueue from "../../helpers/event";
-import IServer from "../../helpers/server";
-import JWTService from "../../helpers/token/jwt";
-import { authenticate } from "../../middlewares/authorize";
-import IServiceProfileAvailabilityRepository from "../../modules/service-profile-availability-repository";
-import { MongoServiceProfileAvailabilityRepository } from "../../modules/service-profile-availability-repository/mongo";
-import IAccountAuthorization, { IAuthorizePayload } from "../../services/account-authorization";
-import LocalAccountAuthorization from "../../services/account-authorization/local";
+import { config } from "../../../config";
+import { IMongoDB } from "../../../helpers/database/mongo";
+import IMessengerQueue from "../../../helpers/event";
+import IServer from "../../../helpers/server";
+import JWTService from "../../../helpers/token/jwt";
+import { authenticate } from "../../../middlewares/authorize";
+import IServiceProfileAvailabilityRepository from "../../../modules/service-profile-availability-repository";
+import { MongoServiceProfileAvailabilityRepository } from "../../../modules/service-profile-availability-repository/mongo";
+import IAccountAuthorization, { IAuthorizePayload } from "../../../services/account-authorization";
+import LocalAccountAuthorization from "../../../services/account-authorization/local";
 import ServiceController from "./controller";
 
 const ROUTE = '/service-profile-availability';

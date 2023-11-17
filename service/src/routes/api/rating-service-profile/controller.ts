@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import IMessengerQueue from '../../helpers/event';
-import HTTPError from '../../utils/error';
-import { IRatingServiceProfileRepository } from '../../modules/rating-service-profile-repository';
-import { IRatinfServiceProfileRemovePayload, IRatingServiceProfileAddedPayload, RatingServiceProfileTopics } from '../../events/rating-service-profile';
+import IMessengerQueue from '../../../helpers/event';
+import HTTPError from '../../../utils/error';
+import { IRatingServiceProfileRepository } from '../../../modules/rating-service-profile-repository';
+import { IRatinfServiceProfileRemovePayload, IRatingServiceProfileAddedPayload, RatingServiceProfileTopics } from '../../../events/rating-service-profile';
 
 export default class RatingServiceProfileController {
     event: IMessengerQueue;

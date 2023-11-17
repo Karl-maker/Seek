@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import IMessengerQueue from '../../helpers/event';
-import IServiceProfileAvailabilityRepository from '../../modules/service-profile-availability-repository';
-import HTTPError from '../../utils/error';
-import { IServiceProfileAvailabilityAddPayload, ServiceProfileAvailabilityTopics } from '../../events/service-profile-availability';
+import IMessengerQueue from '../../../helpers/event';
+import IServiceProfileAvailabilityRepository from '../../../modules/service-profile-availability-repository';
+import HTTPError from '../../../utils/error';
+import { IServiceProfileAvailabilityAddPayload, ServiceProfileAvailabilityTopics } from '../../../events/service-profile-availability';
 
 export default class ServiceProfileController {
     event: IMessengerQueue;
