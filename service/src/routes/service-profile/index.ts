@@ -55,13 +55,13 @@ export default (server: IServer, db: IMongoDB, event: IMessengerQueue) => {
     const serviceRepository: IServiceRepository = new MongoServiceRepository(db);
     const ratingServiceProfileRepository: IRatingServiceProfileRepository = new MongoRatingServiceProfileRepository(db);
 
-    server.app.post(`${ROUTE}`, authenticate(localJWTAuthorization), serviceProfileController.createProfile(accountRepository, serviceProfileRepository));
-    server.app.patch(`${ROUTE}`, authenticate(localJWTAuthorization), serviceProfileController.updateProfileDetails(serviceProfileRepository));
-    server.app.delete(`${ROUTE}`, authenticate(localJWTAuthorization), serviceProfileController.deleteProfileById(serviceProfileRepository));
-    server.app.post(`${ROUTE}/display-picture`, authenticate(localJWTAuthorization), upload.single('profile-picture'), serviceProfileController.uploadProfilePicture(bucketStorage, serviceProfileRepository));
-    server.app.delete(`${ROUTE}/display-picture`, authenticate(localJWTAuthorization), serviceProfileController.removeProfilePicture(bucketStorage, serviceProfileRepository));
-    server.app.get(`${ROUTE}/location-search`, serviceProfileController.getAllServiceProfilesByLocation(serviceProfileRepository));
-    server.app.get(`${ROUTE}/:service_profile_id/services`, serviceProfileController.getAllServicesByServiceProfileId(serviceRepository));
-    server.app.get(`${ROUTE}/:service_profile_id/ratings`, serviceProfileController.getAllRatingToServiceProfile(ratingServiceProfileRepository));
-    server.app.get(`${ROUTE}/:service_profile_id/availability`, serviceProfileController.getAllAvailability(serviceProfileAvailabilityRepository))
+    server.router.post(`${ROUTE}`, authenticate(localJWTAuthorization), serviceProfileController.createProfile(accountRepository, serviceProfileRepository));
+    server.router.patch(`${ROUTE}`, authenticate(localJWTAuthorization), serviceProfileController.updateProfileDetails(serviceProfileRepository));
+    server.router.delete(`${ROUTE}`, authenticate(localJWTAuthorization), serviceProfileController.deleteProfileById(serviceProfileRepository));
+    server.router.post(`${ROUTE}/display-picture`, authenticate(localJWTAuthorization), upload.single('profile-picture'), serviceProfileController.uploadProfilePicture(bucketStorage, serviceProfileRepository));
+    server.router.delete(`${ROUTE}/display-picture`, authenticate(localJWTAuthorization), serviceProfileController.removeProfilePicture(bucketStorage, serviceProfileRepository));
+    server.router.get(`${ROUTE}/location-search`, serviceProfileController.getAllServiceProfilesByLocation(serviceProfileRepository));
+    server.router.get(`${ROUTE}/:service_profile_id/services`, serviceProfileController.getAllServicesByServiceProfileId(serviceRepository));
+    server.router.get(`${ROUTE}/:service_profile_id/ratings`, serviceProfileController.getAllRatingToServiceProfile(ratingServiceProfileRepository));
+    server.router.get(`${ROUTE}/:service_profile_id/availability`, serviceProfileController.getAllAvailability(serviceProfileAvailabilityRepository))
 }

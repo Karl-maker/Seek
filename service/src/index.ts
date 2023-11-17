@@ -13,6 +13,7 @@ import availabilityServiceProfileRoutes from "./routes/service-profile-availabil
 import locationRoutes from "./routes/location";
 import IServer from "./helpers/server";
 import HttpServer from "./helpers/server/http";
+import { apiV1Router } from "./routes";
 
 const mongo_db_uri: string = config.database[config.environment].uri;
 const server: IServer = new HttpServer(express());
@@ -33,12 +34,7 @@ const database: IMongoDB = new MongoDB(mongo_db_uri, {
     server.app.set('view engine', 'handlebars');
     server.app.engine('.handlebars', engine({extname: 'handlebars'}));
     
-    accountRoutes(server, database, event);
-    serviceProfileRoutes(server, database, event);
-    serviceRoutes(server, database, event);
-    ratingServiceProfileRoutes(server, database, event);
-    availabilityServiceProfileRoutes(server, database, event);
-    locationRoutes(server, database, event);
+    server.app.use('/api/v1', apiV1Router(server, database, event))
 
     server.start('0.0.0.0', config.port, (host: string, port: number) => {
         logger.info(`running on http://${host}:${port}/`);

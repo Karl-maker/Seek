@@ -29,6 +29,6 @@ export default (server: IServer, db: IMongoDB, event: IMessengerQueue) => {
     const serviceProfileAvailabilityRepository: IServiceProfileAvailabilityRepository = new MongoServiceProfileAvailabilityRepository(db);
     const localJWTAuthorization: IAccountAuthorization = new LocalAccountAuthorization(accessTokenManager)
 
-    server.app.post(`${ROUTE}`, authenticate(localJWTAuthorization), serviceController.createAvailability(serviceProfileAvailabilityRepository));
-    server.app.delete(`${ROUTE}/:service_profile_availability_id`, authenticate(localJWTAuthorization), serviceController.deleteAvailability(serviceProfileAvailabilityRepository));
+    server.router.post(`${ROUTE}`, authenticate(localJWTAuthorization), serviceController.createAvailability(serviceProfileAvailabilityRepository));
+    server.router.delete(`${ROUTE}/:service_profile_availability_id`, authenticate(localJWTAuthorization), serviceController.deleteAvailability(serviceProfileAvailabilityRepository));
 } 

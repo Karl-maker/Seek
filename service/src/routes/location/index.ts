@@ -29,8 +29,8 @@ export default (server: IServer, db: IMongoDB, event: IMessengerQueue) => {
     const locationRepository: ILocationsRepository = new MongoLocationRepository(db);
     const localJWTAuthorization: IAccountAuthorization = new LocalAccountAuthorization(accessTokenManager);
 
-    server.app.post(`${ROUTE}`, authenticate(localJWTAuthorization, 'admin'), locationProfileController.createLocation(locationRepository));
-    server.app.patch(`${ROUTE}/:location_id`, authenticate(localJWTAuthorization, 'admin'), locationProfileController.updateLocationById(locationRepository));
-    server.app.delete(`${ROUTE}/:location_id`, authenticate(localJWTAuthorization, 'admin'), locationProfileController.deleteLocationById(locationRepository));
-    server.app.get(`${ROUTE}`, locationProfileController.getAllLocations(locationRepository));
+    server.router.post(`${ROUTE}`, authenticate(localJWTAuthorization, 'admin'), locationProfileController.createLocation(locationRepository));
+    server.router.patch(`${ROUTE}/:location_id`, authenticate(localJWTAuthorization, 'admin'), locationProfileController.updateLocationById(locationRepository));
+    server.router.delete(`${ROUTE}/:location_id`, authenticate(localJWTAuthorization, 'admin'), locationProfileController.deleteLocationById(locationRepository));
+    server.router.get(`${ROUTE}`, locationProfileController.getAllLocations(locationRepository));
 } 

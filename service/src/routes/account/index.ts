@@ -84,20 +84,20 @@ export default (server: IServer, db: IMongoDB, event: IMessengerQueue) => {
     const ipLookup: IIpLookup = new GeoIpLite();
     const localJWTAuthorization: IAccountAuthorization = new LocalAccountAuthorization(accessTokenManager)
 
-    server.app.post(`${ROUTE}/signup`, accountController.signup(localJWTAuthentication));
-    server.app.post(`${ROUTE}/login`, accountController.login(localJWTAuthentication)); 
-    server.app.post(`${ROUTE}/logout`, cookieParser(), accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.logout(localJWTAuthentication));
-    server.app.post(`${ROUTE}/refresh`, cookieParser(),accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.getAccessToken(localJWTAuthentication));
-    server.app.get(`${ROUTE}/confirmation`, authenticate(localJWTAuthorization), accountController.sendConfirmationCode(accountRepository, accountConfirmation));
-    server.app.get(`${ROUTE}`, authenticate(localJWTAuthorization), accountController.current(accountRepository));
-    server.app.delete(`${ROUTE}/deactivate`, authenticate(localJWTAuthorization), accountController.deactivateAccountById(accountRepository));
-    server.app.post(`${ROUTE}`, authenticate(localJWTAuthorization, 'admin'), accountController.createAccount(accountRepository));
-    server.app.post(`${ROUTE}/confirmation`, authenticate(localJWTAuthorization), accountController.checkConfirmationCode(accountConfirmation, accountRepository));
-    server.app.post(`${ROUTE}/reset-password`, accountController.resetPasswordWithToken(accountRepository, passwordRecoveryManager));
-    server.app.post(`${ROUTE}/password-recovery`, accountController.recoverPassword(passwordRecovery));
-    server.app.patch(`${ROUTE}/:account_id`, authenticate(localJWTAuthorization, 'admin'), accountController.updateAccountById(accountRepository));
-    server.app.delete(`${ROUTE}/:account_id`, authenticate(localJWTAuthorization, 'admin'), accountController.deleteAccountById(accountRepository));
-    server.app.get(`${ROUTE}/:account_id`, accountController.getAccountById(accountRepository));
+    server.router.post(`${ROUTE}/signup`, accountController.signup(localJWTAuthentication));
+    server.router.post(`${ROUTE}/login`, accountController.login(localJWTAuthentication)); 
+    server.router.post(`${ROUTE}/logout`, cookieParser(), accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.logout(localJWTAuthentication));
+    server.router.post(`${ROUTE}/refresh`, cookieParser(),accountController.getRefreshTokenFromRequest(retrieveRefreshToken), accountController.getAccessToken(localJWTAuthentication));
+    server.router.get(`${ROUTE}/confirmation`, authenticate(localJWTAuthorization), accountController.sendConfirmationCode(accountRepository, accountConfirmation));
+    server.router.get(`${ROUTE}`, authenticate(localJWTAuthorization), accountController.current(accountRepository));
+    server.router.delete(`${ROUTE}/deactivate`, authenticate(localJWTAuthorization), accountController.deactivateAccountById(accountRepository));
+    server.router.post(`${ROUTE}`, authenticate(localJWTAuthorization, 'admin'), accountController.createAccount(accountRepository));
+    server.router.post(`${ROUTE}/confirmation`, authenticate(localJWTAuthorization), accountController.checkConfirmationCode(accountConfirmation, accountRepository));
+    server.router.post(`${ROUTE}/reset-password`, accountController.resetPasswordWithToken(accountRepository, passwordRecoveryManager));
+    server.router.post(`${ROUTE}/password-recovery`, accountController.recoverPassword(passwordRecovery));
+    server.router.patch(`${ROUTE}/:account_id`, authenticate(localJWTAuthorization, 'admin'), accountController.updateAccountById(accountRepository));
+    server.router.delete(`${ROUTE}/:account_id`, authenticate(localJWTAuthorization, 'admin'), accountController.deleteAccountById(accountRepository));
+    server.router.get(`${ROUTE}/:account_id`, accountController.getAccountById(accountRepository));
 
     event.subscribe(AccountTopics.SIGNUP, accountController.sendConfirmationCodeEvent(accountConfirmation));
     event.subscribe(AccountTopics.LOGIN, accountController.loginLocationCheckEvent(loginRepository, ipLookup));

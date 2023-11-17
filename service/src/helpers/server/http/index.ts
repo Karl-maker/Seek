@@ -1,4 +1,4 @@
-import { Express } from 'express';
+import express, { Express, Router } from 'express';
 import http, { Server } from 'http';
 import IServer from '..';
 
@@ -8,6 +8,7 @@ import IServer from '..';
 class HttpServer implements IServer {
     server: Server;  // The HTTP server instance.
     app: Express;    // The Express application instance.
+    router: Router;
 
     /**
      * Creates a new NodeServer instance.
@@ -17,6 +18,7 @@ class HttpServer implements IServer {
     constructor(app: Express) {
         this.app = app;
         this.server = http.createServer(app);
+        this.router = express.Router();
     }
 
     /**

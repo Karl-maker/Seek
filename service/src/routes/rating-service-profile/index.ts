@@ -29,6 +29,6 @@ export default (server: IServer, db: IMongoDB, event: IMessengerQueue) => {
     const ratingServiceProfileRepository: IRatingServiceProfileRepository = new MongoRatingServiceProfileRepository(db);
     const localJWTAuthorization: IAccountAuthorization = new LocalAccountAuthorization(accessTokenManager);
 
-    server.app.post(`${ROUTE}`, authenticate(localJWTAuthorization), ratingServiceProfileController.addRatingToServiceProfile(ratingServiceProfileRepository));
-    server.app.post(`${ROUTE}/:rating_service_profile_id`, authenticate(localJWTAuthorization), ratingServiceProfileController.removeRatingToServiceProfile(ratingServiceProfileRepository));
+    server.router.post(`${ROUTE}`, authenticate(localJWTAuthorization), ratingServiceProfileController.addRatingToServiceProfile(ratingServiceProfileRepository));
+    server.router.post(`${ROUTE}/:rating_service_profile_id`, authenticate(localJWTAuthorization), ratingServiceProfileController.removeRatingToServiceProfile(ratingServiceProfileRepository));
 } 

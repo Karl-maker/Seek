@@ -32,8 +32,8 @@ export default (server: IServer, db: IMongoDB, event: IMessengerQueue) => {
     const localJWTAuthorization: IAccountAuthorization = new LocalAccountAuthorization(accessTokenManager)
     const serviceRepository: IServiceRepository = new MongoServiceRepository(db);
 
-    server.app.post(`${ROUTE}`, authenticate(localJWTAuthorization), serviceController.createService(serviceRepository, serviceProfileRepository));
-    server.app.patch(`${ROUTE}/:service_id`, authenticate(localJWTAuthorization), serviceController.updateService(serviceRepository));
-    server.app.get(`${ROUTE}/:services_id`, authenticate(localJWTAuthorization), serviceController.getServiceById(serviceRepository));
-    server.app.delete(`${ROUTE}/:services_id`, authenticate(localJWTAuthorization), serviceController.deleteServiceById(serviceRepository));
+    server.router.post(`${ROUTE}`, authenticate(localJWTAuthorization), serviceController.createService(serviceRepository, serviceProfileRepository));
+    server.router.patch(`${ROUTE}/:service_id`, authenticate(localJWTAuthorization), serviceController.updateService(serviceRepository));
+    server.router.get(`${ROUTE}/:services_id`, authenticate(localJWTAuthorization), serviceController.getServiceById(serviceRepository));
+    server.router.delete(`${ROUTE}/:services_id`, authenticate(localJWTAuthorization), serviceController.deleteServiceById(serviceRepository));
 } 
