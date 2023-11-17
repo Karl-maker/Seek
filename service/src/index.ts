@@ -8,6 +8,7 @@ import MongoDB, { IMongoDB } from "./helpers/database/mongo";
 import IServer from "./helpers/server";
 import HttpServer from "./helpers/server/http";
 import { apiV1Router } from "./routes";
+import errorHandler, { error404 } from "./middlewares/error-handler";
 
 const mongo_db_uri: string = config.database[config.environment].uri;
 const server: IServer = new HttpServer(express());
@@ -28,6 +29,8 @@ const database: IMongoDB = new MongoDB(mongo_db_uri, {
     server.app.set('view engine', 'handlebars');
     server.app.engine('.handlebars', engine({extname: 'handlebars'}));
     server.app.use('/api/v1', apiV1Router(server, database, event))
+    server.app.use(errorHandler(server, event));
+    server.app.use(error404);
     
     server.start('0.0.0.0', config.port, (host: string, port: number) => {
         logger.info(`running on http://${host}:${port}/`);
