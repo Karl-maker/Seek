@@ -9,7 +9,6 @@ import IAccountConfirmation from '../../services/account-confirmation';
 import IAccountPasswordRecovery from '../../services/account-recovery';
 import { IPasswordRecoveryToken } from '../../services/account-recovery/token';
 import JWTService from '../../helpers/token/jwt';
-import { logger } from '../../helpers/logger/basic-logging';
 
 export default class AccountController {
     event: IMessengerQueue;
