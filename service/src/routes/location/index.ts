@@ -1,7 +1,7 @@
 import { config } from "../../config";
 import { IMongoDB } from "../../helpers/database/mongo";
 import IMessengerQueue from "../../helpers/event";
-import NodeServer from "../../helpers/server"
+import IServer from "../../helpers/server";
 import JWTService from "../../helpers/token/jwt";
 import { authenticate } from "../../middlewares/authorize";
 import ILocationsRepository from "../../modules/location-repository";
@@ -24,7 +24,7 @@ const accessTokenManager = new JWTService<IAuthorizePayload>(
  * @TODO add validation
  */
 
-export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
+export default (server: IServer, db: IMongoDB, event: IMessengerQueue) => {
     const locationProfileController = new LocationController(event);
     const locationRepository: ILocationsRepository = new MongoLocationRepository(db);
     const localJWTAuthorization: IAccountAuthorization = new LocalAccountAuthorization(accessTokenManager);

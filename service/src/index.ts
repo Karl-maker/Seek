@@ -1,6 +1,5 @@
 import { logger } from "./helpers/logger/basic-logging";
 import express from "express";
-import NodeServer from "./helpers/server";
 import { engine } from 'express-handlebars';
 import { config } from "./config";
 import NodeEvent from "./helpers/event/node";
@@ -12,9 +11,11 @@ import serviceRoutes from "./routes/service";
 import ratingServiceProfileRoutes from "./routes/rating-service-profile";
 import availabilityServiceProfileRoutes from "./routes/service-profile-availability";
 import locationRoutes from "./routes/location";
+import IServer from "./helpers/server";
+import HttpServer from "./helpers/server/http";
 
 const mongo_db_uri: string = config.database[config.environment].uri;
-const server: NodeServer = new NodeServer(express());
+const server: IServer = new HttpServer(express());
 const event: IMessengerQueue = NodeEvent;
 const database: IMongoDB = new MongoDB(mongo_db_uri, {
     dbName: config.database[config.environment].name,
@@ -39,8 +40,8 @@ const database: IMongoDB = new MongoDB(mongo_db_uri, {
     availabilityServiceProfileRoutes(server, database, event);
     locationRoutes(server, database, event);
 
-    server.start(config.port, () => {
-        logger.info(`running on port ${config.port}`);
+    server.start('0.0.0.0', config.port, (host: string, port: number) => {
+        logger.info(`running on http://${host}:${port}/`);
     });
 })();
 

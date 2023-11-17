@@ -9,6 +9,9 @@ import IAccountConfirmation from '../../services/account-confirmation';
 import IAccountPasswordRecovery from '../../services/account-recovery';
 import { IPasswordRecoveryToken } from '../../services/account-recovery/token';
 import JWTService from '../../helpers/token/jwt';
+import { ILoginRepository } from '../../modules/login-repository';
+import IIpLookup, { IGetLocationIpLookUp } from '../../services/ip-lookup';
+import { logger } from '../../helpers/logger/basic-logging';
 
 export default class AccountController {
     event: IMessengerQueue;
@@ -113,7 +116,12 @@ export default class AccountController {
     login(accountAuthentication: IAccountAuthentication){
         return async (req: Request, res: Response, next: NextFunction) => {
             try{
-                const ipAddress = req.socket.remoteAddress;
+                let ipAddress = req.socket.remoteAddress;
+
+                if (ipAddress && ipAddress.includes('::ffff:')) {
+                    ipAddress = ipAddress.split('::ffff:')[1];
+                }
+                
                 const medium = req.get('user-agent');
                 const result = await accountAuthentication.login(req.body, {
                     ip_address: ipAddress,
@@ -394,6 +402,29 @@ export default class AccountController {
         return async (payload: IAccountSignupPayload) => {
             const account = payload.account;
             accountConfirmation.generate(account);
+        }
+    }
+
+    loginLocationCheckEvent(accountLoginsRepository: ILoginRepository, ipLookUp: IIpLookup) {
+        return async (payload: IAccountLoginPayload) => {
+            try{
+                logger.debug('Enter loginLocationCheckEvent() event');
+                const account = payload.account;
+                const last_login = await accountLoginsRepository.findLastByAccountId(account.id);
+                if(!last_login["ip_address"]) return;
+                const location = ipLookUp.getLocation(last_login.ip_address);
+                await accountLoginsRepository.updateById(last_login.id, {
+                    location: {
+                        area: location.area,
+                        country: location.country,
+                        state: location.state,
+                        coordinates: location.coordinates
+                    }
+                });
+                logger.debug('Exit loginLocationCheckEvent() event');
+            } catch(err) {
+                logger.error('Issue checking location of most recent login in loginLocationCheckEvent()', err);
+            }
         }
     }
 

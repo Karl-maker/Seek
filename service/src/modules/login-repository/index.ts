@@ -1,7 +1,7 @@
 import IBaseRepository, { IBase } from "../base-repository";
 
 export interface ILoginRepository extends IBaseRepository<ILogin> {
-
+    findLastByAccountId: (account_id: string) => Promise<ILogin>;
 }
 
 export interface ILogin extends IBase {
@@ -9,6 +9,15 @@ export interface ILogin extends IBase {
     method: "jwt" | "facebook";
     medium?: string;
     ip_address?: string;
-    location?: string;
+    location?: {
+        area?: string;
+        state?: string;
+        country?: string;
+        coordinates?: {
+            longitude: number;
+            latitude: number;
+        }
+    };
     device?: string;
+    approved: boolean;
 }

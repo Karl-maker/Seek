@@ -3,7 +3,7 @@ import { IBucketStorage } from "../../helpers/bucket";
 import { FileSystemBucket } from "../../helpers/bucket/file-system";
 import { IMongoDB } from "../../helpers/database/mongo";
 import IMessengerQueue from "../../helpers/event";
-import NodeServer from "../../helpers/server"
+import IServer from "../../helpers/server";
 import JWTService from "../../helpers/token/jwt";
 import { authenticate } from "../../middlewares/authorize";
 import { IAccountRepository } from "../../modules/account-repository";
@@ -46,7 +46,7 @@ const upload = multer({ storage: storage })
  * @TODO add validation
  */
 
-export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
+export default (server: IServer, db: IMongoDB, event: IMessengerQueue) => {
     const serviceProfileController = new ServiceProfileController(event);
     const accountRepository: IAccountRepository = new MongoAccountRepository(db);
     const serviceProfileRepository: IServiceProfileRepository = new MongoServiceProfileRepository(db);

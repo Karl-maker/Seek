@@ -9,8 +9,17 @@ const loginSchema = new Schema<ILogin>({
     method: { type: String, required: true },
     ip_address: { type: String, required: false },
     medium: { type: String, required: false },
-    location: { type: String, required: false },
+    location: { 
+        area: { type: String, required: false },
+        state: { type: String, required: false },
+        country: { type: String, required: false },
+        coordinates: {
+            longitude: { type: Number, required: false },
+            latitude: { type: Number, required: false }
+        }
+     },
     device: { type: String, required: false },
+    approved: { type: Boolean, default: true },
 },
 {
     timestamps: { 
@@ -35,6 +44,7 @@ export class MongoLoginRepository implements ILoginRepository {
         this.database = db;     
         this.model = this.database.mongoose.model<ILogin>('Login', loginSchema);
     }
+
     updateOne(where: Partial<ILogin>, data: Partial<ILogin>): Promise<IRepositoryUpdateOneResponse<ILogin>> {
         throw new Error("Method not implemented.");
     }
@@ -45,6 +55,16 @@ export class MongoLoginRepository implements ILoginRepository {
 
         return { element: loginDetails.toObject() }
     }
+    async findLastByAccountId (account_id: string): Promise<ILogin> {
+        const login = await this.model
+        .findOne({
+            account_id
+        })
+        .sort({ created_at: -1 }) // Sort in descending order based on createdAt
+        .limit(1);
+
+        return login;
+    };
     async updateById(id: string | number, data: Partial<ILogin>): Promise<IRepositoryUpdateByIdResponse<ILogin>> {
 
         const updatedLoginDetail = await this.model.findByIdAndUpdate(id,{

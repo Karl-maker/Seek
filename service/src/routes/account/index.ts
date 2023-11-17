@@ -1,11 +1,9 @@
-import { NextFunction, Request, Response } from "express";
 import { config } from "../../config";
 import { AccountTopics } from "../../events/account";
 import { IMongoDB } from "../../helpers/database/mongo";
 import IEmail from "../../helpers/email";
 import NodeMailer from "../../helpers/email/nodemailer";
 import IMessengerQueue from "../../helpers/event";
-import NodeServer from "../../helpers/server"
 import ISMS from "../../helpers/sms";
 import TwilioSMS from "../../helpers/sms/twilio";
 import JWTService from "../../helpers/token/jwt";
@@ -13,7 +11,6 @@ import { authenticate } from "../../middlewares/authorize";
 import { IAccountConfirmationRepository } from "../../modules/account-confirmation-repository";
 import { MongoAccountConfirmationRepository } from "../../modules/account-confirmation-repository/mongo";
 import { IAccountRepository } from "../../modules/account-repository";
-import { MockAccountRepository } from "../../modules/account-repository/mock";
 import { MongoAccountRepository } from "../../modules/account-repository/mongo";
 import { ILoginRepository } from "../../modules/login-repository";
 import { MongoLoginRepository } from "../../modules/login-repository/mongo";
@@ -29,7 +26,9 @@ import IRetrieveRefreshToken from "../../services/retrieve-refresh-token";
 import RetrieveRefreshTokenFromWeb from "../../services/retrieve-refresh-token/web";
 import AccountController from "./controller";
 import cookieParser from "cookie-parser";
-import { logger } from "../../helpers/logger/basic-logging";
+import IIpLookup from "../../services/ip-lookup";
+import GeoIpLite from "../../services/ip-lookup/geoIp";
+import IServer from "../../helpers/server";
 
 const ROUTE = '/account';
 const sms: ISMS = new TwilioSMS(config.twilio.account_sid, config.twilio.auth_token, config.twilio.number);
@@ -74,7 +73,7 @@ const retrieveRefreshToken: IRetrieveRefreshToken = new RetrieveRefreshTokenFrom
  * @TODO add validation
  */
 
-export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
+export default (server: IServer, db: IMongoDB, event: IMessengerQueue) => {
     const accountController = new AccountController(event);
     const accountRepository: IAccountRepository = new MongoAccountRepository(db);
     const accountConfirmationRepository: IAccountConfirmationRepository = new MongoAccountConfirmationRepository(db);
@@ -82,6 +81,7 @@ export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     const localJWTAuthentication: IAccountAuthentication = new LocalAccountAuthentication(accountRepository, loginRepository, accessTokenManager, refreshTokenManager);
     const accountConfirmation: IAccountConfirmation = new AccountConfirmationWithPin(accountRepository, accountConfirmationRepository, sms, email);
     const passwordRecovery: IAccountPasswordRecovery = new AccountPasswordRecoveryWithToken(accountRepository, passwordRecoveryManager, sms, email);
+    const ipLookup: IIpLookup = new GeoIpLite();
     const localJWTAuthorization: IAccountAuthorization = new LocalAccountAuthorization(accessTokenManager)
 
     server.app.post(`${ROUTE}/signup`, accountController.signup(localJWTAuthentication));
@@ -100,4 +100,5 @@ export default (server: NodeServer, db: IMongoDB, event: IMessengerQueue) => {
     server.app.get(`${ROUTE}/:account_id`, accountController.getAccountById(accountRepository));
 
     event.subscribe(AccountTopics.SIGNUP, accountController.sendConfirmationCodeEvent(accountConfirmation));
+    event.subscribe(AccountTopics.LOGIN, accountController.loginLocationCheckEvent(loginRepository, ipLookup));
 }
