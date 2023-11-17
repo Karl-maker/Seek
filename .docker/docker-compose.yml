@@ -1,0 +1,36 @@
+version: "3.9"
+
+services: 
+
+  general-service:
+    build: 
+      context: ../general-service
+      dockerfile: Dockerfile
+      target: dev
+    container_name: general-service
+    volumes:
+      - ../general-service:/app
+      - /app/node_modules
+    depends_on:
+      - mongodb
+      - test-mongodb
+    restart: always
+
+  mongodb:
+    image: mongo:latest
+    container_name: general-database
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+
+  test-mongodb:
+    image: mongo:latest
+    container_name: test-general-database
+    restart: always
+    volumes:
+      - test-mongo-data:/data/db
+      
+volumes:
+  mongo-data:
+  test-mongo-data:
+
