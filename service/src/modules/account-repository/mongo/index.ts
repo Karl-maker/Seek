@@ -4,6 +4,7 @@ import { Model, Schema } from 'mongoose';
 import PasswordUtils from "../../../utils/password";
 import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany, IRepositoryUpdateOneResponse } from "../../base-repository";
 import { logger } from "../../../helpers/logger/basic-logging";
+import { MongoBaseRepository } from "../../base-repository/mongo";
 
 const accountSchema = new Schema<IAccount>({
     id: { type: String },
@@ -58,16 +59,10 @@ accountSchema.pre<IAccount>('save', function (next) {
     next();
 });
 
-export class MongoAccountRepository implements IAccountRepository {
-    database: IMongoDB;
-    model: Model<IAccount>;
+export class MongoAccountRepository extends MongoBaseRepository<IAccount> {
 
     constructor(db: IMongoDB) {
-        this.database = db;     
-        this.model = this.database.mongoose.model<IAccount>('Account', accountSchema);
-    }
-    updateOne(where: Partial<IAccount>, data: Partial<IAccount>): Promise<IRepositoryUpdateOneResponse<IAccount>> {
-        throw new Error("Method not implemented.");
+        super(db, "Account", accountSchema)
     }
 
     async create(data: Partial<IAccount>): Promise<IRepositoryCreateResponse<IAccount>> {
@@ -78,7 +73,6 @@ export class MongoAccountRepository implements IAccountRepository {
     }
 
     async updateById(id: string | number, data: Partial<IAccount | null>): Promise<IRepositoryUpdateByIdResponse<IAccount>> {
-
         if(data.password) data.password = await PasswordUtils.hash(data.password);
 
         const updatedAccount = await this.model.findByIdAndUpdate(id, data, { new: true });
@@ -94,80 +88,6 @@ export class MongoAccountRepository implements IAccountRepository {
         };
     }
 
-    /**
-     * @TODO Test Method
-     */
-    async updateMany(where: Partial<IAccount>, data: Partial<IAccount>): Promise<IRepositoryUpdateManyResponse> {
-        const result = await this.model.updateMany(where, data);
-        return { mutated: { amount: result.modifiedCount } };
-    }
-    
-    /**
-     * @TODO Test Method
-     */
-    async findById(id: string): Promise<Partial<IAccount>> {
-        const account = await this.model.findById(id).lean();
-        return account;
-    }
-
-    /**
-     * @TODO Test Method
-     */
-    async findMany(
-        where: Partial<IAccount>,
-        options?: IFindManyOptions<IAccount>
-      ): Promise<IFindManyResponse<IAccount>> {
-        const query = this.model.find(where);
-      
-        if (options) {
-          if (options.sort) {
-            const { field, direction } = options.sort;
-            if (field) {
-              // Ensure 'field' is a valid key of type IAccount
-              if (Object.keys(accountSchema.paths).includes(field as string)) {
-                query.sort({ [field]: direction });
-              }
-            }
-          }
-      
-          if (options.page) {
-            const { size, number } = options.page;
-            if (size && number) {
-              query.skip((number - 1) * size).limit(size);
-            }
-          }
-        }
-      
-        const elements = await query.lean();
-        const total = await this.model.countDocuments(where); // Get the total count from Mongoose
-      
-        return { elements, amount: total };
-    }
-      
-    /**
-     * @TODO Test Method
-     */
-    async findOne(where: Partial<IAccount>): Promise<Partial<IAccount>> {
-        const account = await this.model.findOne(where).lean();
-        return account;
-    }
-
-    /**
-     * @TODO Test Method
-     */
-    async deleteById(id: string | number): Promise<IDeleteById<IAccount>> {
-        const deletedAccount = await this.model.findByIdAndUpdate(id, {
-            status: 'deleted'
-        }).lean();
-        if (!deletedAccount) {
-          return { success: false };
-        }
-        return { success: true, deletedElement: deletedAccount };
-    }
-
-    /**
-     * @TODO Test Method
-     */
     async deleteMany(where: Partial<IAccount>): Promise<IDeleteMany> {
         const result = await this.model.updateMany(where, {
             status: 'deleted'
