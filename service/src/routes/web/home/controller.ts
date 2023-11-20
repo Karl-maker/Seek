@@ -9,7 +9,10 @@ export default class HomeViewController {
 
     homePageController(){
         return async(req: Request, res: Response, next: NextFunction) => {
-            res.render('home', { title: 'Handlebars Example', message: 'Hello, Handlebars!' });
+            res.render('home', { 
+                page_title: 'Welcome Page!', 
+                year: String(new Date().getFullYear()),
+            });
         }
     }
 

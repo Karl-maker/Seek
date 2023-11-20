@@ -37,6 +37,7 @@ const database: IMongoDB = new MongoDB(mongo_db_uri, {
     server.app.set('view engine', 'handlebars');
     server.app.engine('handlebars', engine(handlebarConfig));
     server.app.set('views', path.resolve(__dirname, '../views'));
+    server.app.use(express.static(path.join(__dirname, '../public')));
     server.app.use('/', webViewRouter(server, database, event));
     server.app.use('/api/v1', apiV1Router(server, database, event))
     server.app.use(errorHandler(server, event));

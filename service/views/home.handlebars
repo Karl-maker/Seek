@@ -1,12 +1,6 @@
-<!-- views/index.handlebars -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
-</head>
-<body>
-    <h1>{{ message }}</h1>
-</body>
-</html>
+{{#> layout page_title="Your Site Name"}}
+    <section>
+        <p>Welcome to our site! We provide services in your area with information on availability and prices.</p>
+        <!-- Add more content specific to your site here -->
+    </section>
+{{/layout}}
