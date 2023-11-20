@@ -1,7 +1,6 @@
 import { ILogin, ILoginRepository } from "..";
 import { IMongoDB } from "../../../helpers/database/mongo";
 import { Model, Schema } from 'mongoose';
-import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany, IRepositoryUpdateOneResponse } from "../../base-repository";
 import { MongoBaseRepository } from "../../base-repository/mongo";
 
 const loginSchema = new Schema<ILogin>({

@@ -2,7 +2,7 @@ import IBaseRepository, { IBase, IDeleteById, IDeleteMany, IFindManyOptions, IFi
 import { Model, Schema } from 'mongoose';
 import { IMongoDB } from "../../../helpers/database/mongo";
 
-export abstract class MongoBaseRepository<T extends IBase> implements IBaseRepository<T> {
+export abstract class MongoBaseRepository<T> implements IBaseRepository<T> {
     database: IMongoDB;
     model: Model<T>;
     schema: Schema<T>
