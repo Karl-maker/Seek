@@ -1,9 +1,8 @@
 import { IAccount, IAccountRepository } from "..";
 import { IMongoDB } from "../../../helpers/database/mongo";
-import { Model, Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 import PasswordUtils from "../../../utils/password";
-import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IRepositoryUpdateManyResponse, IFindManyOptions, IFindManyResponse, IDeleteById, IDeleteMany, IRepositoryUpdateOneResponse } from "../../base-repository";
-import { logger } from "../../../helpers/logger/basic-logging";
+import { IRepositoryCreateResponse, IRepositoryUpdateByIdResponse, IDeleteMany } from "../../base-repository";
 import { MongoBaseRepository } from "../../base-repository/mongo";
 
 const accountSchema = new Schema<IAccount>({
@@ -59,7 +58,7 @@ accountSchema.pre<IAccount>('save', function (next) {
     next();
 });
 
-export class MongoAccountRepository extends MongoBaseRepository<IAccount> {
+export class MongoAccountRepository extends MongoBaseRepository<IAccount> implements IAccountRepository {
 
     constructor(db: IMongoDB) {
         super(db, "Account", accountSchema)
@@ -71,7 +70,6 @@ export class MongoAccountRepository extends MongoBaseRepository<IAccount> {
         delete createdAccount.toObject().password;
         return { element: createdAccount.toObject() };
     }
-
     async updateById(id: string | number, data: Partial<IAccount | null>): Promise<IRepositoryUpdateByIdResponse<IAccount>> {
         if(data.password) data.password = await PasswordUtils.hash(data.password);
 
@@ -87,7 +85,6 @@ export class MongoAccountRepository extends MongoBaseRepository<IAccount> {
             element: updatedAccount.toObject() 
         };
     }
-
     async deleteMany(where: Partial<IAccount>): Promise<IDeleteMany> {
         const result = await this.model.updateMany(where, {
             status: 'deleted'
